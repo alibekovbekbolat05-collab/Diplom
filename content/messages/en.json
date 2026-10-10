@@ -372,6 +372,19 @@
       "forbidden": "Not enough permissions",
       "notFound": "Not found",
       "server": "Server error"
+    },
+    "modules": {
+      "overview": "Overview",
+      "events": "Events",
+      "alerts": "Alerts",
+      "cases": "Cases",
+      "assets": "Assets",
+      "sources": "Sources",
+      "rules": "Rules",
+      "reports": "Reports",
+      "analyze": "Analyze file",
+      "settings": "Settings",
+      "audit": "Audit"
     }
   }
 }
