@@ -1,1 +1,369 @@
-SENTINEL_EN_JSON
+{
+  "nav": {
+    "platform": "Platform",
+    "services": "Services",
+    "method": "Method",
+    "about": "About",
+    "contact": "Contact",
+    "signIn": "Sign in",
+    "openDemo": "Open demo",
+    "backToSite": "Back to site",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "theme": { "dark": "Dark", "light": "Light" },
+  "lang": { "label": "Language" },
+  "home": {
+    "heroTitle": "Your network, watched",
+    "heroSub": "Centralized security monitoring with AI detection",
+    "ctaDemo": "Open demo",
+    "ctaContact": "Contact",
+    "live": {
+      "badge": "Simulation",
+      "eps": "events/s",
+      "alerts": "alerts",
+      "cases": "cases",
+      "assets": "assets"
+    },
+    "pipeline": {
+      "title": "Pipeline",
+      "collect": "Collect",
+      "detect": "Detect",
+      "correlate": "Correlate",
+      "respond": "Respond"
+    },
+    "bento": {
+      "title": "What is monitored",
+      "ad": "AD logins, VPN",
+      "web": "Web proxy, WAF",
+      "dns": "DNS queries",
+      "net": "Firewall",
+      "mail": "Mail gateway",
+      "endpoint": "Host processes",
+      "files": "File access"
+    },
+    "ai": {
+      "title": "AI layer",
+      "d": "Flow classifier, UEBA baselines, alert prioritization"
+    },
+    "note": "Demo stream is a simulation. Detection is probabilistic, false positives are possible."
+  },
+  "product": {
+    "title": "SecureOps Console",
+    "sub": "One center for security events",
+    "f1t": "Collect",
+    "f1d": "Agents, API, syslog, file import",
+    "f2t": "Detect",
+    "f2d": "Rules, statistics, ML model",
+    "f3t": "Cases",
+    "f3d": "Alerts correlated into incidents",
+    "f4t": "Reports",
+    "f4d": "Period, MITRE, ISO 27001",
+    "cta": "Open demo"
+  },
+  "services": {
+    "title": "Services",
+    "sub": "Managed security",
+    "monitoring": {
+      "t": "Monitoring 24/7",
+      "d": "Event collection, alerts, on-call shift"
+    },
+    "response": {
+      "t": "Incident response",
+      "d": "Investigation, recommendations, report"
+    },
+    "audit": {
+      "t": "Security audit",
+      "d": "Asset and configuration review"
+    },
+    "training": {
+      "t": "Training",
+      "d": "Phishing drills, password hygiene"
+    }
+  },
+  "method": {
+    "title": "Method",
+    "sub": "Architecture, detectors, AI, metrics",
+    "archT": "Architecture",
+    "archD": "Collect and normalize → detect (rules + statistics + ML) → correlate → prioritize",
+    "detT": "Detectors",
+    "detD": "16 built-in detectors and 25+ Sigma-like rules: scans, brute force, C2, exfiltration, lateral movement, web attacks",
+    "aiT": "AI model",
+    "aiD": "Gradient boosting over network flow features + UEBA (EWMA, robust z-scores)",
+    "metricsT": "Model metrics",
+    "metricsD": "Evaluated on a held-out split",
+    "colMetric": "Metric",
+    "colValue": "Value",
+    "limitsT": "Limitations",
+    "l1": "Concept drift: attack behavior changes, the model needs retraining",
+    "l2": "Class imbalance: attacks are rare compared to normal traffic",
+    "l3": "Dataset bias: synthetic data misses real-world scenarios",
+    "l4": "False positives are inevitable, an analyst is needed",
+    "l5": "The system accelerates triage, it does not replace humans"
+  },
+  "about": {
+    "title": "About",
+    "mission": "Making security monitoring affordable for SMB",
+    "author": "Author",
+    "supervisor": "Supervisor",
+    "university": "University",
+    "year": "Year",
+    "diplomaT": "Diploma project",
+    "dept": "Department"
+  },
+  "contact": {
+    "title": "Contact",
+    "sub": "We reply within a day",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "sent": "Sent",
+    "error": "Send failed",
+    "limited": "Too many requests, try later",
+    "orTelegram": "Telegram",
+    "orWhatsapp": "WhatsApp"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "p1": "The site stores minimal data: a session cookie, chosen theme and language.",
+    "p2": "The contact form sends name, email and message to the company mailbox. No third-party sharing.",
+    "p3": "Demo mode masks IP addresses. Analytics loads only with your consent."
+  },
+  "apiDocs": {
+    "title": "API",
+    "sub": "Event ingestion and integrations",
+    "ingestT": "POST /api/ingest",
+    "ingestD": "Event batch: JSON array, NDJSON or syslog (RFC 5424). Bearer token in the Authorization header.",
+    "detectT": "POST /api/detect",
+    "detectD": "Stateless detection over an event batch, returns alerts.",
+    "analyzeT": "POST /api/analyze-file",
+    "analyzeD": "Upload a log file (CSV, Zeek, auth.log, nginx, Windows JSON, syslog).",
+    "streamT": "GET /api/stream",
+    "streamD": "SSE stream: counters, new alerts, heartbeat.",
+    "authT": "Authentication",
+    "authD": "Session cookie for the console, Bearer ingest token for agents.",
+    "schemasT": "Event schema",
+    "limitsT": "Limits",
+    "limitsD": "Up to 2 MB per request, 5000 events per batch, per-IP rate limit."
+  },
+  "p404": {
+    "title": "Page not found",
+    "text": "This page does not exist",
+    "home": "Home"
+  },
+  "p500": {
+    "title": "Server error",
+    "text": "Something broke, we are on it",
+    "home": "Home"
+  },
+  "footer": {
+    "product": "Product",
+    "docs": "Docs",
+    "privacy": "Privacy",
+    "contact": "Contact",
+    "rights": "All rights reserved"
+  },
+  "common": {
+    "simulation": "Simulation",
+    "ingested": "Ingested",
+    "live": "Live",
+    "paused": "Paused",
+    "pause": "Pause",
+    "resume": "Resume",
+    "loading": "Loading",
+    "empty": "Empty",
+    "export": "Export",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "severity": "Severity",
+    "time": "Time",
+    "source": "Source",
+    "actions": "Actions",
+    "status": "Status",
+    "details": "Details",
+    "all": "All",
+    "open": "Open",
+    "copy": "Copy",
+    "copied": "Copied",
+    "sev": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "info": "Info"
+    },
+    "statusv": {
+      "new": "New",
+      "investigating": "Investigating",
+      "resolved": "Resolved",
+      "false_positive": "False positive"
+    },
+    "roles": { "admin": "Admin", "analyst": "Analyst", "viewer": "Viewer" },
+    "noteProb": "Detection is probabilistic, false positives are possible",
+    "aiGenerated": "AI-generated",
+    "synthetic": "Synthetic benchmark",
+    "error": "Error"
+  },
+  "platform": {
+    "overview": "Overview",
+    "events": "Events",
+    "alerts": "Alerts",
+    "cases": "Cases",
+    "assets": "Assets",
+    "sources": "Sources",
+    "rules": "Rules",
+    "reports": "Reports",
+    "analyze": "Analyze file",
+    "settings": "Settings",
+    "audit": "Audit",
+    "signOut": "Sign out",
+    "user": "User",
+    "role": "Role",
+    "login": {
+      "title": "Console sign in",
+      "sub": "For clients and analysts",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "demo": "Open demo",
+      "invalid": "Wrong email or password",
+      "locked": "Too many attempts, wait a moment",
+      "note": "Demo session is read-only"
+    },
+    "ov": {
+      "threats": "Threats",
+      "attackers": "Top attackers",
+      "targets": "Top targets",
+      "risk": "Risk by asset",
+      "overTime": "Alerts over time",
+      "types": "Attack types",
+      "map": "Threat map",
+      "feed": "Alert feed",
+      "eps": "Events/s"
+    },
+    "ev": {
+      "query": "e.g. src_ip:10.0.0.5 AND event_action:login",
+      "tail": "Tail",
+      "columns": "Columns",
+      "raw": "Event",
+      "count": "Found",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "al": {
+      "explain": "Explainability",
+      "why": "Why flagged",
+      "evidence": "Evidence",
+      "factors": "Top factors",
+      "recommend": "Recommended actions",
+      "confidence": "Confidence",
+      "mitre": "MITRE",
+      "rule": "Rule",
+      "aiScore": "AI score"
+    },
+    "cases": {
+      "timeline": "Kill chain",
+      "related": "Related events",
+      "comments": "Comments",
+      "addComment": "Add",
+      "assignee": "Assignee",
+      "assign": "Assign",
+      "notes": "Notes",
+      "stRecon": "Recon",
+      "stDelivery": "Delivery",
+      "stExploit": "Exploitation",
+      "stInstall": "Installation",
+      "stC2": "C2",
+      "stActions": "Actions on objectives",
+      "openCase": "Open"
+    },
+    "assets": {
+      "hosts": "Hosts",
+      "users": "Users",
+      "criticality": "Criticality",
+      "firstSeen": "First seen",
+      "lastSeen": "Last seen",
+      "topology": "Topology",
+      "risk": "Risk"
+    },
+    "sources": {
+      "kind": "Kind",
+      "lastEvent": "Last event",
+      "eps": "EPS",
+      "health": "Health",
+      "ok": "Active",
+      "silent": "Silent",
+      "tokens": "Tokens",
+      "createToken": "Create token",
+      "revoke": "Revoke",
+      "tokenCreated": "Token created",
+      "once": "Copy it now, the token is shown only once",
+      "kAgent": "Agent",
+      "kApi": "API",
+      "kFile": "File",
+      "kSimulator": "Simulator"
+    },
+    "rules": {
+      "editor": "Editor",
+      "newRule": "New",
+      "validate": "Validate",
+      "invalid": "Invalid",
+      "valid": "Valid",
+      "test": "Test",
+      "threshold": "Threshold",
+      "windowSec": "Window, s",
+      "groupBy": "Group by",
+      "sevOverride": "Severity",
+      "enabled": "On",
+      "disabled": "Off",
+      "testPass": "Test passed",
+      "testFail": "Test failed"
+    },
+    "reports": {
+      "generate": "Generate",
+      "summary": "Summary",
+      "topIncidents": "Top incidents",
+      "byTactic": "By MITRE tactic",
+      "iso": "ISO/IEC 27001",
+      "isoNote": "Mapping is indicative, not a certification",
+      "dlJson": "JSON",
+      "dlCsv": "CSV",
+      "print": "Print",
+      "period": "Period",
+      "generated": "Generated"
+    },
+    "analyze": {
+      "drop": "Drop a file or paste logs",
+      "paste": "Paste logs",
+      "run": "Analyze",
+      "progress": "Processing",
+      "results": "Results",
+      "formats": "CSV (CICFlowMeter), Zeek conn.log, auth.log, nginx, Windows JSON, syslog, JSON",
+      "fileTooBig": "File is too large"
+    },
+    "settings": {
+      "notifications": "Notifications",
+      "telegram": "Telegram",
+      "webhook": "Webhook",
+      "thresholds": "Thresholds",
+      "ipMask": "IP masking",
+      "users": "Users",
+      "saved": "Saved",
+      "addUser": "Add",
+      "email": "Email",
+      "passwordHash": "Password hash",
+      "role": "Role"
+    },
+    "audit": { "who": "Who", "what": "What", "when": "When", "ip": "IP" },
+    "err": {
+      "forbidden": "Not enough permissions",
+      "notFound": "Not found",
+      "server": "Server error"
+    }
+  }
+}
