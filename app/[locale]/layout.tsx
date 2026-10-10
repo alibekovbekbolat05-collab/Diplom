@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Unbounded } from "next/font/google";
 import { notFound } from "next/navigation";
 import { site } from "@/config/site";
@@ -22,6 +22,8 @@ const unbounded = Unbounded({
 export function generateStaticParams() {
   return site.locales.map((locale) => ({ locale }));
 }
+
+export const viewport:Viewport={width:"device-width",initialScale:1,themeColor:"#080c11"};
 
 const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.add('light');}catch(e){}})();`;
 
@@ -55,6 +57,8 @@ export async function generateMetadata({
     },
     twitter: { card: "summary_large_image" },
     robots: { index: true, follow: true },
+    manifest: "/manifest.webmanifest",
+    icons: { icon: "/icon.svg", apple: "/apple-icon" },
   };
 }
 

@@ -1,3 +1,4 @@
+import { StructuredData } from "@/components/site/structured-data";
 import { LiquidNav } from "@/components/site/liquid-nav";
 import { PageShell } from "@/components/site/page-shell";
 import { SmoothScroll } from "@/components/site/smooth-scroll";
@@ -17,7 +18,7 @@ export default async function SiteLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   return (
-    <>
+    <><StructuredData/>
       <SmoothScroll />
       <CustomCursor />
       <LiquidNav />
