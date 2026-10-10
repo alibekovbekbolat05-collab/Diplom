@@ -26,7 +26,7 @@
 | Печать отчёта | ✔ белый фон, читаемый тёмный текст, интерфейс навигации скрыт |
 | SEO | ✔ sitemap, robots, manifest, icon, apple icon, OG RU/EN/KK возвращают HTTP 200 |
 | GitHub CI | ✔ опубликованные этапы проходят Validate; актуальный результат — вкладка Actions |
-| Vercel production | ✘ деплой не подтверждён: подключение возвращает пустые teams/projects; `diplom` — 404 |
+| Vercel production | ✔ GitHub сообщает успешный Production-деплой `7cfcd23`; HTTPS 200 для RU/EN/KK, входа, health/stats; вход администратора и защищённый overview работают |
 | Lighthouse / 60 FPS / INP | ✘ не измерены; численные цели не заявляются как достигнутые |
 | Redis / внешние уведомления / LLM | ✘ не проверены на реальных внешних сервисах: ключи отсутствовали |
 

@@ -38,7 +38,7 @@ tests/                    171 тест
 | Администрирование | `fe38b41` — feat: complete rule file report and administration workflows |
 | SEO и заголовки | `a59ddf5` — feat: add search metadata icons manifest and security headers |
 | Итоговая проверка | `76c6f1e` — fix: verify localized workflows and harden platform security |
-| Печать и передача | fix: verify printable reports and document handover |
+| Печать и передача | `7cfcd23` — fix: verify printable reports and document handover |
 
 Полные файлы и история доступны в репозитории; схема API — [API.md](API.md).
 
@@ -60,9 +60,9 @@ npm run dev -- -H 127.0.0.1
 
 Сохраните сгенерированные значения в `.env.local`. Откройте `/ru` и `/ru/platform/login`. Вход администратора использует заданные вами email и пароль; кнопка демо создаёт сеанс наблюдателя. Хеш пароля не является паролем для формы.
 
-GitHub уже содержит код; для автодеплоя импортируйте репозиторий в нужной команде Vercel или подключите его к существующему `diplom`. Параметры: Next.js, корень репозитория, Node 22, `npm ci`, `npm run build`, стандартная output directory. Добавьте env в нужные окружения и запускайте `main`. После статуса Ready проверьте сайт и вход.
+GitHub подключён к проекту `diplom` команды `be-ka2`; коммиты в `main` автоматически деплоятся. Публичный адрес: [diplom-be-ka2.vercel.app](https://diplom-be-ka2.vercel.app/ru). Панель проекта: [Vercel](https://vercel.com/be-ka2/diplom). Для повторной настройки: Next.js, корень репозитория, Node 22, `npm ci`, `npm run build`, стандартная output directory, env для нужных окружений.
 
-Текущее подключение Vercel возвращает пустые teams/projects, а проект `diplom` — 404. Деплой и ранее указанные production env/пароль поэтому не подтверждены. Для продолжения нужна ссылка на проект с командой: `https://vercel.com/<team>/diplom`. Установка GitHub app сама по себе не связывает уже созданный проект с репозиторием.
+Production-деплой коммита `7cfcd23` завершён успешно: [запись Vercel](https://vercel.com/be-ka2/diplom/GgALgyDiLxFWKLMs4nr366tLvUNL). 10 октября 2026 проверены HTTP 200 для RU/EN/KK, страницы входа, `/api/health` и `/api/stats`; вход администратора с ранее заданными данными и защищённый `/api/overview` работают. `/api/health` подтверждает настроенную авторизацию и временное хранилище. Подключённый инструмент Vercel не имеет доступа к команде `be-ka2` (403), поэтому настройки панели через него не инспектировались; успешный деплой подтверждён GitHub Deployment Status и прямыми HTTPS-запросами.
 
 ## 6. Подключение интеграций
 
@@ -86,6 +86,8 @@ GitHub уже содержит код; для автодеплоя импорт�
 
 ✔ 24 публичных страницы; 99 сочетаний страниц консоли/языков/ролей; 8 форматов файлов; ingest → детектор → кейс → аудит; агент и отзыв токенов; XSS/CSV escaping; IPv6; пауза и автоматическое переподключение SSE; ширины 360/768/1280/1920; 0 ошибок браузера и CSP.
 
-✘ Vercel production не подтверждён; внешние Redis/Telegram/LLM не проверялись без ключей; Lighthouse/INP/60 FPS не измерены. Эти цели не выдаются за достигнутые.
+✔ Vercel production: автоматический деплой завершён, публичные страницы и API доступны, вход администратора и защищённый overview проверены.
+
+✘ Внешние Redis/Telegram/LLM не проверялись без ключей; Lighthouse/INP/60 FPS не измерены. Эти цели не выдаются за достигнутые.
 
 Подробные реальные результаты и ограничения: [VERIFICATION.md](VERIFICATION.md).
