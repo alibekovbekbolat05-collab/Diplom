@@ -1,0 +1,4 @@
+import { PageHeading, Section } from "@/components/site/section";
+import { pageContext, pageMeta, type PageProps } from "@/lib/metadata";
+export async function generateMetadata(p: PageProps) { const {locale,m}=await pageContext(p);return pageMeta(m.apiDocs.title,m.apiDocs.sub,locale,"/api-docs"); }
+export default async function Docs(p: PageProps) { const {m}=await pageContext(p);return <><PageHeading title={m.apiDocs.title} sub={m.apiDocs.sub}/><Section title="HTTP / JSON"><div className="panel p-7"><h3 className="font-mono text-accent">GET /api/stats</h3><p className="my-5 text-mute">{m.home.note}</p><pre className="overflow-x-auto text-sm">{`curl https://YOUR_HOST/api/stats`}</pre></div><div className="panel mt-5 p-7"><h3 className="font-mono text-accent">POST /api/contact</h3><p className="mt-5 text-mute">{m.privacy.p2}</p></div></Section></>; }

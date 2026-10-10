@@ -11,8 +11,13 @@
     "menu": "Menu",
     "close": "Close"
   },
-  "theme": { "dark": "Dark", "light": "Light" },
-  "lang": { "label": "Language" },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "lang": {
+    "label": "Language"
+  },
   "home": {
     "heroTitle": "Your network, watched",
     "heroSub": "Centralized security monitoring with AI detection",
@@ -109,7 +114,8 @@
     "university": "University",
     "year": "Year",
     "diplomaT": "Diploma project",
-    "dept": "Department"
+    "dept": "Department",
+    "disclosure": "Academic project. Aspan Security is fictional; contacts and supervisor details are demonstration data."
   },
   "contact": {
     "title": "Contact",
@@ -122,13 +128,14 @@
     "error": "Send failed",
     "limited": "Too many requests, try later",
     "orTelegram": "Telegram",
-    "orWhatsapp": "WhatsApp"
+    "orWhatsapp": "WhatsApp",
+    "unavailable": "The Telegram integration is not configured. Your message was not sent."
   },
   "privacy": {
     "title": "Privacy",
     "p1": "The site stores minimal data: a session cookie, chosen theme and language.",
-    "p2": "The contact form sends name, email and message to the company mailbox. No third-party sharing.",
-    "p3": "Demo mode masks IP addresses. Analytics loads only with your consent."
+    "p2": "When configured, the form sends your name, email and message through Telegram. Sending is unavailable without the integration.",
+    "p3": "The demo uses simulated events only. Real uploaded logs are available to authorized users. Third-party analytics is not connected."
   },
   "apiDocs": {
     "title": "API",
@@ -201,7 +208,11 @@
       "resolved": "Resolved",
       "false_positive": "False positive"
     },
-    "roles": { "admin": "Admin", "analyst": "Analyst", "viewer": "Viewer" },
+    "roles": {
+      "admin": "Admin",
+      "analyst": "Analyst",
+      "viewer": "Viewer"
+    },
     "noteProb": "Detection is probabilistic, false positives are possible",
     "aiGenerated": "AI-generated",
     "synthetic": "Synthetic benchmark",
@@ -211,61 +222,6 @@
     "overview": "Overview",
     "events": "Events",
     "alerts": "Alerts",
-    "cases": "Cases",
-    "assets": "Assets",
-    "sources": "Sources",
-    "rules": "Rules",
-    "reports": "Reports",
-    "analyze": "Analyze file",
-    "settings": "Settings",
-    "audit": "Audit",
-    "signOut": "Sign out",
-    "user": "User",
-    "role": "Role",
-    "login": {
-      "title": "Console sign in",
-      "sub": "For clients and analysts",
-      "email": "Email",
-      "password": "Password",
-      "submit": "Sign in",
-      "demo": "Open demo",
-      "invalid": "Wrong email or password",
-      "locked": "Too many attempts, wait a moment",
-      "note": "Demo session is read-only"
-    },
-    "ov": {
-      "threats": "Threats",
-      "attackers": "Top attackers",
-      "targets": "Top targets",
-      "risk": "Risk by asset",
-      "overTime": "Alerts over time",
-      "types": "Attack types",
-      "map": "Threat map",
-      "feed": "Alert feed",
-      "eps": "Events/s"
-    },
-    "ev": {
-      "query": "e.g. src_ip:10.0.0.5 AND event_action:login",
-      "tail": "Tail",
-      "columns": "Columns",
-      "raw": "Event",
-      "count": "Found",
-      "from": "From",
-      "to": "To",
-      "apply": "Apply",
-      "reset": "Reset"
-    },
-    "al": {
-      "explain": "Explainability",
-      "why": "Why flagged",
-      "evidence": "Evidence",
-      "factors": "Top factors",
-      "recommend": "Recommended actions",
-      "confidence": "Confidence",
-      "mitre": "MITRE",
-      "rule": "Rule",
-      "aiScore": "AI score"
-    },
     "cases": {
       "timeline": "Kill chain",
       "related": "Related events",
@@ -359,7 +315,59 @@
       "passwordHash": "Password hash",
       "role": "Role"
     },
-    "audit": { "who": "Who", "what": "What", "when": "When", "ip": "IP" },
+    "audit": {
+      "who": "Who",
+      "what": "What",
+      "when": "When",
+      "ip": "IP"
+    },
+    "signOut": "Sign out",
+    "user": "User",
+    "role": "Role",
+    "login": {
+      "title": "Console sign in",
+      "sub": "For clients and analysts",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "demo": "Open demo",
+      "invalid": "Wrong email or password",
+      "locked": "Too many attempts, wait a moment",
+      "note": "Demo session is read-only"
+    },
+    "ov": {
+      "threats": "Threats",
+      "attackers": "Top attackers",
+      "targets": "Top targets",
+      "risk": "Risk by asset",
+      "overTime": "Alerts over time",
+      "types": "Attack types",
+      "map": "Threat map",
+      "feed": "Alert feed",
+      "eps": "Events/s"
+    },
+    "ev": {
+      "query": "e.g. src_ip:10.0.0.5 AND event_action:login",
+      "tail": "Tail",
+      "columns": "Columns",
+      "raw": "Event",
+      "count": "Found",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "al": {
+      "explain": "Explainability",
+      "why": "Why flagged",
+      "evidence": "Evidence",
+      "factors": "Top factors",
+      "recommend": "Recommended actions",
+      "confidence": "Confidence",
+      "mitre": "MITRE",
+      "rule": "Rule",
+      "aiScore": "AI score"
+    },
     "err": {
       "forbidden": "Not enough permissions",
       "notFound": "Not found",

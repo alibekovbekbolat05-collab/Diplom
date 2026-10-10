@@ -71,7 +71,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={`${inter.variable} ${unbounded.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script>{themeScript}</script>
       </head>
       <body>
         <MessagesProvider messages={messages} locale={locale}>
