@@ -6,7 +6,7 @@ export const eventSchema=z.object({
  event_category:z.enum(["authentication","network","dns","web","process","file","iam","mail"]),event_action:text,outcome:z.enum(["success","failure","unknown"]).default("unknown"),
  src_ip:z.string().ip().optional(),dst_ip:z.string().ip().optional(),src_port:z.number().int().min(0).max(65535).optional(),dst_port:z.number().int().min(0).max(65535).optional(),proto:z.enum(["tcp","udp","icmp","other"]).optional(),
  bytes_in:z.number().finite().nonnegative().default(0),bytes_out:z.number().finite().nonnegative().default(0),packets:z.number().finite().nonnegative().default(0),duration_ms:z.number().finite().nonnegative().default(0),
- user:text.optional(),process:text.optional(),country:z.string().regex(/^[A-Z]{2}$/).optional(),
+ syn_count:z.number().int().nonnegative().optional(),fin_count:z.number().int().nonnegative().optional(),user:text.optional(),process:text.optional(),country:z.string().regex(/^[A-Z]{2}$/).optional(),
  http:z.object({method:z.string().max(16),path:z.string().max(4096),status:z.number().int().min(100).max(599),user_agent:text}).optional(),
  dns:z.object({query:text,qtype:z.string().max(16)}).optional(),severity_hint:severitySchema.optional(),raw_ref:z.string().max(4096).optional(),simulation:z.boolean().default(false),
 }).strict();

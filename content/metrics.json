@@ -1,17 +1,45 @@
 {
   "benchmark": "synthetic",
   "generator": "scripts/train-model.mjs seed=42",
+  "trainer": "ml/train.py (scikit-learn)",
   "test_size": 2000,
   "train_size": 10000,
-  "accuracy": 0.9905,
-  "precision": 0.9733656174334141,
-  "recall": 0.9804878048780488,
-  "f1": 0.9769137302551641,
-  "roc_auc": 0.9994615738610216,
+  "accuracy": 0.9975,
+  "precision": 1.0,
+  "recall": 0.9878048780487805,
+  "f1": 0.9938650306748467,
+  "roc_auc": 0.9999509127166744,
   "confusion": {
-    "tp": 402,
-    "fp": 11,
-    "tn": 1579,
-    "fn": 8
+    "tp": 405,
+    "fp": 0,
+    "tn": 1590,
+    "fn": 5
+  },
+  "per_class": {
+    "0": {
+      "precision": 0.9968652037617555,
+      "recall": 1.0,
+      "f1-score": 0.9984301412872841,
+      "support": 1590.0
+    },
+    "1": {
+      "precision": 1.0,
+      "recall": 0.9878048780487805,
+      "f1-score": 0.9938650306748467,
+      "support": 410.0
+    },
+    "accuracy": 0.9975,
+    "macro avg": {
+      "precision": 0.9984326018808778,
+      "recall": 0.9939024390243902,
+      "f1-score": 0.9961475859810653,
+      "support": 2000.0
+    },
+    "weighted avg": {
+      "precision": 0.9975078369905956,
+      "recall": 0.9975,
+      "f1-score": 0.9974942936117345,
+      "support": 2000.0
+    }
   }
 }

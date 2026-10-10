@@ -16,7 +16,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run train:model
+      - run: node scripts/ensure-model.mjs
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test

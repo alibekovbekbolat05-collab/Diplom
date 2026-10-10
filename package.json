@@ -7,17 +7,18 @@
     "node": ">=20.9.0"
   },
   "scripts": {
-    "predev": "node scripts/train-model.mjs",
+    "predev": "node scripts/ensure-model.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/train-model.mjs",
+    "prebuild": "node scripts/ensure-model.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint app components lib server config tests --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "pretest": "node scripts/train-model.mjs",
+    "pretest": "node scripts/ensure-model.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "train:model": "node scripts/train-model.mjs"
+    "train:model": "node scripts/train-model.mjs",
+    "train:python": "python ml/train.py --synthetic"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -359,6 +359,7 @@ function evaluate(model, dataset) {
 }
 
 // ---------- main ----------
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
 const dataset = generateDataset(12000, 42);
 const testSize = 2000;
 const test = dataset.slice(0, testSize);
@@ -405,3 +406,5 @@ writeFileSync(
 
 console.log("model trees:", model.trees.length);
 console.log("metrics:", JSON.stringify(metrics, null, 2));
+
+}
