@@ -1,5 +1,7 @@
 # Aspan Security / SecureOps
 
+[Передача проекта и инструкции на русском](docs/HANDOVER.ru.md)
+
 Fictional managed-security company website and diploma SIEM showcase. Next.js 15 / React 19 / TypeScript, three locales (RU/EN/KK), dark/light themes, liquid navigation, authenticated console. No commercial certification or real-world model accuracy is claimed.
 
 ## Local run and first login

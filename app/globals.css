@@ -177,3 +177,15 @@ button:disabled { cursor: not-allowed; opacity: .45; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 @media print { aside, header, nav { display:none !important; } main { margin:0 !important; padding:0 !important; } .lg\:pl-60 { padding-left:0 !important; } .panel { border:1px solid #ccc; box-shadow:none; } }
+@media print {
+  :root, :root.light {
+    --c-bg: 255 255 255;
+    --c-panel: 255 255 255;
+    --c-surface: 248 250 252;
+    --c-ink: 15 23 42;
+    --c-mute: 71 85 105;
+    --c-line: 203 213 225;
+    --c-accent: 0 96 110;
+    --c-critical: 185 28 28;
+  }
+}
