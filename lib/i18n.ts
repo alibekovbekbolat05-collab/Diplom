@@ -3,6 +3,8 @@ import en from "@/content/messages/en.json";
 import kk from "@/content/messages/kk.json";
 import { site, type Locale } from "@/config/site";
 
+export type { Locale } from "@/config/site";
+
 export const dictionaries = { ru, en, kk } as const;
 
 export type Messages = typeof ru;

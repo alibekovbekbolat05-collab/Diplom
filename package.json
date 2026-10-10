@@ -7,11 +7,14 @@
     "node": ">=20.9.0"
   },
   "scripts": {
+    "predev": "node scripts/train-model.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/train-model.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "pretest": "node scripts/train-model.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "train:model": "node scripts/train-model.mjs"
