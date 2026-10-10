@@ -22,8 +22,12 @@ export function MessagesProvider({
   children: React.ReactNode;
 }) {
   const value = useMemo<I18nCtx>(
-    () => ({ messages, locale, t: createT(messages as unknown as Record<string, unknown>) }),
-    [messages, locale]
+    () => ({
+      messages,
+      locale,
+      t: createT(messages as unknown as Record<string, unknown>),
+    }),
+    [messages, locale],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

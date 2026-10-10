@@ -1,21 +1,481 @@
 "use client";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/components/providers";
-import { useConsole,DataControls } from "./context";
+import { useConsole, DataControls } from "./context";
 import type { Rule } from "@/server/rules";
-import { isAdmin,canMutate } from "@/server/auth/session";
+import { isAdmin, canMutate } from "@/lib/permissions";
 import { Drawer } from "@/components/ui/overlay";
 import type { Alert } from "@/server/schema";
-export function RulesView(){const {messages:m}=useI18n(),c=useConsole();const [rules,setRules]=useState<Rule[]>([]),[edit,setEdit]=useState<Rule|null>(null),[text,setText]=useState(""),[error,setError]=useState(""),[result,setResult]=useState<Alert[]|null>(null),[busy,setBusy]=useState(false);
- useEffect(()=>{const abort=new AbortController();fetch("/api/rules",{signal:abort.signal}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(x=>setRules(x.rules)).catch(()=>{if(!abort.signal.aborted)setError(m.common.error);});return()=>abort.abort();},[m.common.error]);
- async function action(test:boolean){setBusy(true);try{const parsed={data:JSON.parse(text) as Rule};const updated=rules.map(r=>r.id===edit?.id?parsed.data:r);if(new Set(updated.map(r=>r.id)).size!==updated.length)throw Error();const r=await fetch("/api/rules",{method:test?"POST":"PUT",headers:{"Content-Type":"application/json","x-csrf-token":c.session.csrf||""},body:JSON.stringify(test?{rule:parsed.data,events:c.data?.events||[]}:updated)});if(!r.ok)throw Error();const x=await r.json();if(test)setResult(x.alerts);else{setRules(x.rules);setEdit(null);}setError("");}catch{setError(m.common.error);}finally{setBusy(false);}}
- return <><DataControls/><h1 className="mb-6 font-display text-3xl">{m.platform.modules.rules}</h1><p className="mb-5 text-mute">{m.admin.ruleNote}</p><div className="grid gap-3 md:grid-cols-2">{rules.map(r=><button key={r.id} onClick={()=>{setEdit(r);setText(JSON.stringify(r,null,2));setResult(null);setError("");}} className="panel p-5 text-left"><span className="text-sm text-accent">{r.id} / {r.enabled?m.common.on:m.common.off}</span><p className="mt-2">{r.title}</p><p className="mt-2 text-xs text-mute">{r.mitre} · {r.threshold} / {r.windowSec}s</p></button>)}</div><Drawer open={!!edit} onClose={()=>setEdit(null)} title={m.platform.modules.rules}><label className="block text-sm">{m.admin.ruleJson}<textarea value={text} onChange={e=>setText(e.target.value)} readOnly={!isAdmin(c.session)} rows={22} className="mt-3 w-full rounded-lg border border-line bg-panel p-3 font-mono text-xs"/></label><div className="mt-5 flex gap-3"><button disabled={busy||!canMutate(c.session)} onClick={()=>void action(true)} className="glow-btn">{m.admin.test}</button><button disabled={busy||!isAdmin(c.session)} onClick={()=>void action(false)} className="glow-btn">{m.common.save}</button></div><p role="alert" className="mt-4 text-critical">{error}</p>{result&&<p className="mt-4">{m.admin.matches}: {result.length}</p>}</Drawer></>;}
-export function ReportsView(){const {messages:m}=useI18n(),c=useConsole();const params=new URLSearchParams({source:c.source,scenario:c.scenario});return <><DataControls/><h1 className="mb-6 font-display text-3xl">{m.platform.modules.reports}</h1><div className="no-print mb-7 flex flex-wrap gap-3"><button className="glow-btn" onClick={()=>window.print()}>{m.admin.print}</button>{["json","csv"].map(f=><a key={f} className="glow-btn" href={`/api/reports?${params}&format=${f}`}>{m.common.export} {f.toUpperCase()}</a>)}</div><div className="panel p-7"><p className="text-accent">{c.data?.simulation?m.common.simulation:m.common.ingested}</p><p className="my-5">{m.console.total}: {c.data?.total||0} · {m.platform.modules.alerts}: {c.data?.alerts.length||0} · {m.platform.modules.cases}: {c.data?.cases.length||0}</p><h2 className="font-display text-xl">ISO/IEC 27001:2022</h2><p className="my-4 text-mute">{m.admin.isoNote}</p><ul className="space-y-3"><li>A.8.15 — {m.platform.modules.events}</li><li>A.8.16 — {m.platform.modules.alerts}</li><li>A.5.24 — {m.platform.modules.cases}</li></ul><h2 className="my-5 font-display text-xl">{m.platform.modules.cases}</h2>{c.data?.cases.map(x=><p key={x.id} className="mb-3 font-mono text-xs">{x.id} · {x.entity} · {x.severity} · {x.status}</p>)}</div></>;}
-export function AnalyzeView(){const {messages:m}=useI18n(),c=useConsole();const [file,setFile]=useState<File|null>(null),[result,setResult]=useState<{total:number;alerts:Alert[]}|null>(null),[error,setError]=useState(""),[busy,setBusy]=useState(false);async function analyze(){if(!file)return;setBusy(true);setError("");try{if(file.size>2*1024*1024)throw Error();const r=await fetch("/api/analyze-file",{method:"POST",headers:{"Content-Type":"text/plain","x-csrf-token":c.session.csrf||""},body:file});if(!r.ok)throw Error();setResult(await r.json());}catch{setError(m.common.error);}finally{setBusy(false);}}
- return <><h1 className="mb-6 font-display text-3xl">{m.platform.modules.analyze}</h1><div className="panel p-7"><p className="mb-5 text-mute">{m.admin.fileNote}</p>{!canMutate(c.session)&&<p className="mb-5 text-accent">{m.console.readOnly}</p>}<label>{m.admin.chooseFile}<input className="my-5 block w-full text-sm" type="file" accept=".json,.ndjson,.csv,.tsv,.log,.txt" disabled={!canMutate(c.session)} onChange={e=>setFile(e.target.files?.[0]||null)}/></label><button className="glow-btn" disabled={busy||!file||!canMutate(c.session)} onClick={()=>void analyze()}>{busy?m.common.loading:m.admin.analyze}</button><p role="alert" className="mt-5 text-critical">{error}</p>{result&&<div className="mt-7"><p>{m.console.total}: {result.total} · {m.platform.modules.alerts}: {result.alerts.length}</p><pre className="mt-5 max-h-96 overflow-auto whitespace-pre-wrap break-all text-xs">{JSON.stringify(result.alerts,null,2)}</pre></div>}</div></>;}
-interface Settings {ipMask:boolean;storage:string;channels:{telegram:boolean;webhook:boolean};tokens:{id:string;label:string;created:number;revoked:boolean}[];users:{email:string;role:string}[];}
-export function SettingsView(){const {messages:m}=useI18n(),c=useConsole(),[data,setData]=useState<Settings|null>(null),[error,setError]=useState(""),[label,setLabel]=useState("agent"),[secret,setSecret]=useState("");async function load(){try{const r=await fetch("/api/settings");if(!r.ok)throw Error();setData(await r.json());}catch{setError(m.common.error);}}
- useEffect(()=>{if(!isAdmin(c.session))return;const a=new AbortController();fetch("/api/settings",{signal:a.signal}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(setData).catch(()=>{if(!a.signal.aborted)setError(m.common.error);});return()=>a.abort();},[c.session,m.common.error]);
- async function mutate(url:string,method:string,body:unknown){setError("");try{const r=await fetch(url,{method,headers:{"Content-Type":"application/json","x-csrf-token":c.session.csrf||""},body:JSON.stringify(body)});if(!r.ok)throw Error();const x=await r.json();if(x.token)setSecret(x.token);await load();}catch{setError(m.common.error);}}
- return <><h1 className="mb-6 font-display text-3xl">{m.platform.modules.settings}</h1>{!isAdmin(c.session)?<p>{m.platform.err.forbidden}</p>:<div className="space-y-5"><div className="panel p-6"><p>{m.admin.storage}: {data?.storage}</p><p className="my-4 text-mute">{m.admin.storageNote}</p><label><input type="checkbox" checked={data?.ipMask||false} onChange={e=>void mutate("/api/settings","PATCH",{ipMask:e.target.checked})}/> {m.admin.ipMask}</label></div><div className="panel p-6"><h2 className="mb-4 font-display text-xl">{m.admin.channels}</h2><p>Telegram: {data?.channels.telegram?m.common.on:m.common.off} · Webhook: {data?.channels.webhook?m.common.on:m.common.off}</p><p className="mt-4 text-mute">{m.admin.channelNote}</p></div><div className="panel p-6"><h2 className="mb-4 font-display text-xl">{m.admin.tokens}</h2><label>{m.admin.label}<input className="mx-3 rounded-lg border border-line bg-panel p-2" value={label} onChange={e=>setLabel(e.target.value)} maxLength={64}/></label><button className="glow-btn" onClick={()=>void mutate("/api/tokens","POST",{label})}>{m.admin.create}</button>{secret&&<div className="my-5"><p>{m.admin.once}</p><code className="block break-all rounded-lg border border-line p-4">{secret}</code><button className="mt-3 text-accent" onClick={()=>setSecret("")}>{m.common.close}</button></div>}{data?.tokens.filter(t=>!t.revoked).map(t=><div key={t.id} className="mt-4 flex flex-wrap items-center justify-between gap-3"><p>{t.label} · {new Date(t.created).toLocaleDateString()}</p><button onClick={()=>void mutate("/api/tokens","DELETE",{id:t.id})} className="text-critical">{m.admin.revoke}</button></div>)}</div><div className="panel p-6"><h2 className="mb-4 font-display text-xl">{m.admin.users}</h2><p className="mb-4 text-mute">{m.admin.userNote}</p>{data?.users.map(u=><p key={u.email}>{u.email} / {u.role}</p>)}</div><p role="alert" className="text-critical">{error}</p></div>}</>;}
-export function AuditView(){const {messages:m}=useI18n(),c=useConsole(),[rows,setRows]=useState<{id:string;ts:number;email:string;action:string;ip:string}[]>([]),[error,setError]=useState("");useEffect(()=>{if(!isAdmin(c.session))return;const a=new AbortController();fetch("/api/audit",{signal:a.signal}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(x=>setRows(x.audit||[])).catch(()=>{if(!a.signal.aborted)setError(m.common.error);});return()=>a.abort();},[c.session,m.common.error]);return <><h1 className="mb-6 font-display text-3xl">{m.platform.modules.audit}</h1>{!isAdmin(c.session)?<p>{m.platform.err.forbidden}</p>:<div className="overflow-x-auto"><table className="w-full min-w-[640px] text-left text-xs"><thead><tr>{[m.common.time,m.admin.users,m.admin.action,"IP"].map(t=><th key={t} className="p-3">{t}</th>)}</tr></thead><tbody>{rows.map(r=><tr key={r.id} className="border-t border-line"><td className="p-3">{new Date(r.ts).toLocaleString()}</td><td className="p-3">{r.email}</td><td className="p-3">{r.action}</td><td className="p-3">{r.ip}</td></tr>)}</tbody></table></div>}<p role="alert" className="text-critical">{error}</p></>;}
+export function RulesView() {
+  const { messages: m } = useI18n(),
+    c = useConsole();
+  const [rules, setRules] = useState<Rule[]>([]),
+    [edit, setEdit] = useState<Rule | null>(null),
+    [text, setText] = useState(""),
+    [error, setError] = useState(""),
+    [result, setResult] = useState<Alert[] | null>(null),
+    [busy, setBusy] = useState(false);
+  useEffect(() => {
+    const abort = new AbortController();
+    fetch("/api/rules", { signal: abort.signal })
+      .then((r) => {
+        if (!r.ok) throw Error();
+        return r.json();
+      })
+      .then((x) => setRules(x.rules))
+      .catch(() => {
+        if (!abort.signal.aborted) setError(m.common.error);
+      });
+    return () => abort.abort();
+  }, [m.common.error]);
+  async function action(test: boolean) {
+    setBusy(true);
+    try {
+      const parsed = { data: JSON.parse(text) as Rule };
+      const updated = rules.map((r) => (r.id === edit?.id ? parsed.data : r));
+      if (new Set(updated.map((r) => r.id)).size !== updated.length)
+        throw Error();
+      const r = await fetch("/api/rules", {
+        method: test ? "POST" : "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": c.session.csrf || "",
+        },
+        body: JSON.stringify(
+          test ? { rule: parsed.data, events: c.data?.events || [] } : updated,
+        ),
+      });
+      if (!r.ok) throw Error();
+      const x = await r.json();
+      if (test) setResult(x.alerts);
+      else {
+        setRules(x.rules);
+        setEdit(null);
+      }
+      setError("");
+    } catch {
+      setError(m.common.error);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <>
+      <DataControls />
+      <h1 className="mb-6 font-display text-3xl">{m.platform.modules.rules}</h1>
+      <p className="mb-5 text-mute">{m.admin.ruleNote}</p>
+      <div className="grid gap-3 md:grid-cols-2">
+        {rules.map((r) => (
+          <button
+            key={r.id}
+            onClick={() => {
+              setEdit(r);
+              setText(JSON.stringify(r, null, 2));
+              setResult(null);
+              setError("");
+            }}
+            className="panel p-5 text-left"
+          >
+            <span className="text-sm text-accent">
+              {r.id} / {r.enabled ? m.common.on : m.common.off}
+            </span>
+            <p className="mt-2">{r.title}</p>
+            <p className="mt-2 text-xs text-mute">
+              {r.mitre} · {r.threshold} / {r.windowSec}s
+            </p>
+          </button>
+        ))}
+      </div>
+      <Drawer
+        open={!!edit}
+        onClose={() => setEdit(null)}
+        title={m.platform.modules.rules}
+      >
+        <label className="block text-sm">
+          {m.admin.ruleJson}
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            readOnly={!isAdmin(c.session)}
+            rows={22}
+            className="mt-3 w-full rounded-lg border border-line bg-panel p-3 font-mono text-xs"
+          />
+        </label>
+        <div className="mt-5 flex gap-3">
+          <button
+            disabled={busy || !canMutate(c.session)}
+            onClick={() => void action(true)}
+            className="glow-btn"
+          >
+            {m.admin.test}
+          </button>
+          <button
+            disabled={busy || !isAdmin(c.session)}
+            onClick={() => void action(false)}
+            className="glow-btn"
+          >
+            {m.common.save}
+          </button>
+        </div>
+        <p role="alert" className="mt-4 text-critical">
+          {error}
+        </p>
+        {result && (
+          <p className="mt-4">
+            {m.admin.matches}: {result.length}
+          </p>
+        )}
+      </Drawer>
+    </>
+  );
+}
+export function ReportsView() {
+  const { messages: m } = useI18n(),
+    c = useConsole();
+  const params = new URLSearchParams({
+    source: c.source,
+    scenario: c.scenario,
+  });
+  return (
+    <>
+      <DataControls />
+      <h1 className="mb-6 font-display text-3xl">
+        {m.platform.modules.reports}
+      </h1>
+      <div className="no-print mb-7 flex flex-wrap gap-3">
+        <button className="glow-btn" onClick={() => window.print()}>
+          {m.admin.print}
+        </button>
+        {["json", "csv"].map((f) => (
+          <a
+            key={f}
+            className="glow-btn"
+            href={`/api/reports?${params}&format=${f}`}
+          >
+            {m.common.export} {f.toUpperCase()}
+          </a>
+        ))}
+      </div>
+      <div className="panel p-7">
+        <p className="text-accent">
+          {c.data?.simulation ? m.common.simulation : m.common.ingested}
+        </p>
+        <p className="my-5">
+          {m.console.total}: {c.data?.total || 0} · {m.platform.modules.alerts}:{" "}
+          {c.data?.alerts.length || 0} · {m.platform.modules.cases}:{" "}
+          {c.data?.cases.length || 0}
+        </p>
+        <h2 className="font-display text-xl">ISO/IEC 27001:2022</h2>
+        <p className="my-4 text-mute">{m.admin.isoNote}</p>
+        <ul className="space-y-3">
+          <li>A.8.15 — {m.platform.modules.events}</li>
+          <li>A.8.16 — {m.platform.modules.alerts}</li>
+          <li>A.5.24 — {m.platform.modules.cases}</li>
+        </ul>
+        <h2 className="my-5 font-display text-xl">
+          {m.platform.modules.cases}
+        </h2>
+        {c.data?.cases.map((x) => (
+          <p key={x.id} className="mb-3 font-mono text-xs">
+            {x.id} · {x.entity} · {x.severity} · {x.status}
+          </p>
+        ))}
+      </div>
+    </>
+  );
+}
+export function AnalyzeView() {
+  const { messages: m } = useI18n(),
+    c = useConsole();
+  const [file, setFile] = useState<File | null>(null),
+    [result, setResult] = useState<{ total: number; alerts: Alert[] } | null>(
+      null,
+    ),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  async function analyze() {
+    if (!file) return;
+    setBusy(true);
+    setError("");
+    try {
+      if (file.size > 2 * 1024 * 1024) throw Error();
+      const r = await fetch("/api/analyze-file", {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+          "x-csrf-token": c.session.csrf || "",
+        },
+        body: file,
+      });
+      if (!r.ok) throw Error();
+      setResult(await r.json());
+    } catch {
+      setError(m.common.error);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <>
+      <h1 className="mb-6 font-display text-3xl">
+        {m.platform.modules.analyze}
+      </h1>
+      <div className="panel p-7">
+        <p className="mb-5 text-mute">{m.admin.fileNote}</p>
+        {!canMutate(c.session) && (
+          <p className="mb-5 text-accent">{m.console.readOnly}</p>
+        )}
+        <label>
+          {m.admin.chooseFile}
+          <input
+            className="my-5 block w-full text-sm"
+            type="file"
+            accept=".json,.ndjson,.csv,.tsv,.log,.txt"
+            disabled={!canMutate(c.session)}
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
+        </label>
+        <button
+          className="glow-btn"
+          disabled={busy || !file || !canMutate(c.session)}
+          onClick={() => void analyze()}
+        >
+          {busy ? m.common.loading : m.admin.analyze}
+        </button>
+        <p role="alert" className="mt-5 text-critical">
+          {error}
+        </p>
+        {result && (
+          <div className="mt-7">
+            <p>
+              {m.console.total}: {result.total} · {m.platform.modules.alerts}:{" "}
+              {result.alerts.length}
+            </p>
+            <pre className="mt-5 max-h-96 overflow-auto whitespace-pre-wrap break-all text-xs">
+              {JSON.stringify(result.alerts, null, 2)}
+            </pre>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+interface Settings {
+  ipMask: boolean;
+  storage: string;
+  channels: { telegram: boolean; webhook: boolean };
+  tokens: { id: string; label: string; created: number; revoked: boolean }[];
+  users: { email: string; role: string }[];
+}
+export function SettingsView() {
+  const { messages: m } = useI18n(),
+    c = useConsole(),
+    [data, setData] = useState<Settings | null>(null),
+    [error, setError] = useState(""),
+    [label, setLabel] = useState("agent"),
+    [secret, setSecret] = useState("");
+  async function load() {
+    try {
+      const r = await fetch("/api/settings");
+      if (!r.ok) throw Error();
+      setData(await r.json());
+    } catch {
+      setError(m.common.error);
+    }
+  }
+  useEffect(() => {
+    if (!isAdmin(c.session)) return;
+    const a = new AbortController();
+    fetch("/api/settings", { signal: a.signal })
+      .then((r) => {
+        if (!r.ok) throw Error();
+        return r.json();
+      })
+      .then(setData)
+      .catch(() => {
+        if (!a.signal.aborted) setError(m.common.error);
+      });
+    return () => a.abort();
+  }, [c.session, m.common.error]);
+  async function mutate(url: string, method: string, body: unknown) {
+    setError("");
+    try {
+      const r = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": c.session.csrf || "",
+        },
+        body: JSON.stringify(body),
+      });
+      if (!r.ok) throw Error();
+      const x = await r.json();
+      if (x.token) setSecret(x.token);
+      await load();
+    } catch {
+      setError(m.common.error);
+    }
+  }
+  return (
+    <>
+      <h1 className="mb-6 font-display text-3xl">
+        {m.platform.modules.settings}
+      </h1>
+      {!isAdmin(c.session) ? (
+        <p>{m.platform.err.forbidden}</p>
+      ) : (
+        <div className="space-y-5">
+          <div className="panel p-6">
+            <p>
+              {m.admin.storage}: {data?.storage}
+            </p>
+            <p className="my-4 text-mute">{m.admin.storageNote}</p>
+            <label>
+              <input
+                type="checkbox"
+                checked={data?.ipMask || false}
+                onChange={(e) =>
+                  void mutate("/api/settings", "PATCH", {
+                    ipMask: e.target.checked,
+                  })
+                }
+              />{" "}
+              {m.admin.ipMask}
+            </label>
+          </div>
+          <div className="panel p-6">
+            <h2 className="mb-4 font-display text-xl">{m.admin.channels}</h2>
+            <p>
+              Telegram: {data?.channels.telegram ? m.common.on : m.common.off} ·
+              Webhook: {data?.channels.webhook ? m.common.on : m.common.off}
+            </p>
+            <p className="mt-4 text-mute">{m.admin.channelNote}</p>
+          </div>
+          <div className="panel p-6">
+            <h2 className="mb-4 font-display text-xl">{m.admin.tokens}</h2>
+            <label>
+              {m.admin.label}
+              <input
+                className="mx-3 rounded-lg border border-line bg-panel p-2"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                maxLength={64}
+              />
+            </label>
+            <button
+              className="glow-btn"
+              onClick={() => void mutate("/api/tokens", "POST", { label })}
+            >
+              {m.admin.create}
+            </button>
+            {secret && (
+              <div className="my-5">
+                <p>{m.admin.once}</p>
+                <code className="block break-all rounded-lg border border-line p-4">
+                  {secret}
+                </code>
+                <button
+                  className="mt-3 text-accent"
+                  onClick={() => setSecret("")}
+                >
+                  {m.common.close}
+                </button>
+              </div>
+            )}
+            {data?.tokens
+              .filter((t) => !t.revoked)
+              .map((t) => (
+                <div
+                  key={t.id}
+                  className="mt-4 flex flex-wrap items-center justify-between gap-3"
+                >
+                  <p>
+                    {t.label} · {new Date(t.created).toLocaleDateString()}
+                  </p>
+                  <button
+                    onClick={() =>
+                      void mutate("/api/tokens", "DELETE", { id: t.id })
+                    }
+                    className="text-critical"
+                  >
+                    {m.admin.revoke}
+                  </button>
+                </div>
+              ))}
+          </div>
+          <div className="panel p-6">
+            <h2 className="mb-4 font-display text-xl">{m.admin.users}</h2>
+            <p className="mb-4 text-mute">{m.admin.userNote}</p>
+            {data?.users.map((u) => (
+              <p key={u.email}>
+                {u.email} / {u.role}
+              </p>
+            ))}
+          </div>
+          <p role="alert" className="text-critical">
+            {error}
+          </p>
+        </div>
+      )}
+    </>
+  );
+}
+export function AuditView() {
+  const { messages: m } = useI18n(),
+    c = useConsole(),
+    [rows, setRows] = useState<
+      { id: string; ts: number; email: string; action: string; ip: string }[]
+    >([]),
+    [error, setError] = useState("");
+  useEffect(() => {
+    if (!isAdmin(c.session)) return;
+    const a = new AbortController();
+    fetch("/api/audit", { signal: a.signal })
+      .then((r) => {
+        if (!r.ok) throw Error();
+        return r.json();
+      })
+      .then((x) => setRows(x.audit || []))
+      .catch(() => {
+        if (!a.signal.aborted) setError(m.common.error);
+      });
+    return () => a.abort();
+  }, [c.session, m.common.error]);
+  return (
+    <>
+      <h1 className="mb-6 font-display text-3xl">{m.platform.modules.audit}</h1>
+      {!isAdmin(c.session) ? (
+        <p>{m.platform.err.forbidden}</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-xs">
+            <thead>
+              <tr>
+                {[m.common.time, m.admin.users, m.admin.action, "IP"].map(
+                  (t) => (
+                    <th key={t} className="p-3">
+                      {t}
+                    </th>
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t border-line">
+                  <td className="p-3">{new Date(r.ts).toLocaleString()}</td>
+                  <td className="p-3">{r.email}</td>
+                  <td className="p-3">{r.action}</td>
+                  <td className="p-3">{r.ip}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p role="alert" className="text-critical">
+        {error}
+      </p>
+    </>
+  );
+}

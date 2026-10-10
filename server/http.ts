@@ -1,6 +1,66 @@
 import { NextResponse } from "next/server";
-export class ApiError extends Error { constructor(public status: number, public code: string) { super(code); } }
-export function errorResponse(error: unknown) { const e=error instanceof ApiError?error:new ApiError(500,"internal_error");return NextResponse.json({error:{code:e.code}},{status:e.status,headers:{"Cache-Control":"no-store"}}); }
-export function sameOrigin(request: Request) { const origin=request.headers.get("origin");if (!origin || origin!==new URL(request.url).origin) throw new ApiError(403,"invalid_origin"); }
-export async function readText(request: Request, maxBytes=2*1024*1024) { const length=Number(request.headers.get("content-length"));if(length>maxBytes)throw new ApiError(413,"body_too_large"); const reader=request.body?.getReader();if(!reader)return "";let size=0;const chunks:Uint8Array[]=[];try { for(;;){const {value,done}=await reader.read();if(done)break;size+=value.byteLength;if(size>maxBytes){await reader.cancel();throw new ApiError(413,"body_too_large");}chunks.push(value);} }finally{reader.releaseLock();} const result=new Uint8Array(size);let offset=0;for(const chunk of chunks){result.set(chunk,offset);offset+=chunk.length;}return new TextDecoder("utf-8",{fatal:true}).decode(result); }
-export async function readJson(request:Request,maxBytes=2*1024*1024):Promise<unknown>{try{return JSON.parse(await readText(request,maxBytes));}catch(e){if(e instanceof ApiError)throw e;throw new ApiError(400,"invalid_json");}}
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    public code: string,
+  ) {
+    super(code);
+  }
+}
+export function errorResponse(error: unknown) {
+  const e =
+    error instanceof ApiError ? error : new ApiError(500, "internal_error");
+  return NextResponse.json(
+    { error: { code: e.code } },
+    { status: e.status, headers: { "Cache-Control": "no-store" } },
+  );
+}
+export function sameOrigin(request: Request) {
+  const origin = request.headers.get("origin");
+  if (!origin || origin !== new URL(request.url).origin)
+    throw new ApiError(403, "invalid_origin");
+}
+export async function readText(request: Request, maxBytes = 2 * 1024 * 1024) {
+  const length = Number(request.headers.get("content-length"));
+  if (length > maxBytes) throw new ApiError(413, "body_too_large");
+  const reader = request.body?.getReader();
+  if (!reader) return "";
+  let size = 0;
+  const chunks: Uint8Array[] = [];
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > maxBytes) {
+        await reader.cancel();
+        throw new ApiError(413, "body_too_large");
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const result = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.length;
+  }
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(result);
+  } catch {
+    throw new ApiError(400, "invalid_encoding");
+  }
+}
+export async function readJson(
+  request: Request,
+  maxBytes = 2 * 1024 * 1024,
+): Promise<unknown> {
+  try {
+    return JSON.parse(await readText(request, maxBytes));
+  } catch (e) {
+    if (e instanceof ApiError) throw e;
+    throw new ApiError(400, "invalid_json");
+  }
+}

@@ -26,7 +26,7 @@ export function toCsv(rows: (string | number | null | undefined)[][]): string {
           const s = sanitizeCsvCell(cell);
           return /[,;"]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
         })
-        .join(",")
+        .join(","),
     )
     .join("\n");
 }

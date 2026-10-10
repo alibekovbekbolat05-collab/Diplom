@@ -33,7 +33,11 @@ export function createT(messages: Record<string, unknown>): TFunc {
     const parts = key.split(".");
     let node: unknown = messages;
     for (const p of parts) {
-      if (node && typeof node === "object" && p in (node as Record<string, unknown>)) {
+      if (
+        node &&
+        typeof node === "object" &&
+        p in (node as Record<string, unknown>)
+      ) {
         node = (node as Record<string, unknown>)[p];
       } else {
         return key;
@@ -44,5 +48,7 @@ export function createT(messages: Record<string, unknown>): TFunc {
 }
 
 export function tr(l10n: Record<string, string>, locale: Locale): string {
-  return l10n[locale] ?? l10n[site.defaultLocale] ?? Object.values(l10n)[0] ?? "";
+  return (
+    l10n[locale] ?? l10n[site.defaultLocale] ?? Object.values(l10n)[0] ?? ""
+  );
 }

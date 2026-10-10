@@ -11,11 +11,30 @@ export function RiskGauge({
   const r = size / 2 - 6;
   const c = 2 * Math.PI * r;
   const color =
-    v >= 75 ? "rgb(var(--c-critical))" : v >= 50 ? "rgb(var(--c-high))" : v >= 25 ? "rgb(var(--c-medium))" : "rgb(var(--c-low))";
+    v >= 75
+      ? "rgb(var(--c-critical))"
+      : v >= 50
+        ? "rgb(var(--c-high))"
+        : v >= 25
+          ? "rgb(var(--c-medium))"
+          : "rgb(var(--c-low))";
   return (
     <div className="inline-flex flex-col items-center gap-1">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${label ?? "risk"}: ${v}`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--c-line))" strokeWidth="5" />
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        role="img"
+        aria-label={`${label ?? "risk"}: ${v}`}
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="rgb(var(--c-line))"
+          strokeWidth="5"
+        />
         <circle
           cx={size / 2}
           cy={size / 2}

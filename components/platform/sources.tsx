@@ -1,4 +1,40 @@
 "use client";
 import { useI18n } from "@/components/providers";
-import { useConsole,DataControls } from "./context";
-export function SourcesView(){const {messages:m,locale}=useI18n(),{data}=useConsole();return <><h1 className="mb-7 font-display text-3xl">{m.platform.modules.sources}</h1><DataControls/><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{data?.sources.map(s=><article key={s.source} className="panel p-6"><span className={`text-xs ${s.health==="ok"?"text-accent":"text-high"}`}>● {s.health==="ok"?m.platform.sources.ok:m.platform.sources.silent}</span><h2 className="mt-5 font-mono text-lg">{s.source}</h2><p className="mt-4 text-xs text-mute">{m.platform.sources.lastEvent}: {new Date(s.last_event).toLocaleString(locale)}</p><p className="mt-2 text-xs text-mute">{s.eps.toFixed(1)} EPS</p></article>)}</div><section className="panel mt-6 p-6"><h2 className="font-mono text-accent">POST /api/ingest</h2><p className="mt-4 text-sm text-mute">{m.apiDocs.ingestD}</p><pre className="mt-5 overflow-x-auto text-xs">{`curl https://YOUR_HOST/api/ingest \\n -H 'Authorization: Bearer YOUR_INGEST_TOKEN' \\n -H 'Content-Type: application/json' \\n --data '[{"ts":"2026-10-10T12:00:00Z","host":"srv","event_category":"authentication","event_action":"login","outcome":"failure","src_ip":"192.0.2.1"}]'`}</pre></section></>;}
+import { useConsole, DataControls } from "./context";
+export function SourcesView() {
+  const { messages: m, locale } = useI18n(),
+    { data } = useConsole();
+  return (
+    <>
+      <h1 className="mb-7 font-display text-3xl">
+        {m.platform.modules.sources}
+      </h1>
+      <DataControls />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {data?.sources.map((s) => (
+          <article key={s.source} className="panel p-6">
+            <span
+              className={`text-xs ${s.health === "ok" ? "text-accent" : "text-high"}`}
+            >
+              ●{" "}
+              {s.health === "ok"
+                ? m.platform.sources.ok
+                : m.platform.sources.silent}
+            </span>
+            <h2 className="mt-5 font-mono text-lg">{s.source}</h2>
+            <p className="mt-4 text-xs text-mute">
+              {m.platform.sources.lastEvent}:{" "}
+              {new Date(s.last_event).toLocaleString(locale)}
+            </p>
+            <p className="mt-2 text-xs text-mute">{s.eps.toFixed(1)} EPS</p>
+          </article>
+        ))}
+      </div>
+      <section className="panel mt-6 p-6">
+        <h2 className="font-mono text-accent">POST /api/ingest</h2>
+        <p className="mt-4 text-sm text-mute">{m.apiDocs.ingestD}</p>
+        <pre className="mt-5 overflow-x-auto text-xs">{`curl https://YOUR_HOST/api/ingest \\n -H 'Authorization: Bearer YOUR_INGEST_TOKEN' \\n -H 'Content-Type: application/json' \\n --data '[{"ts":"2026-10-10T12:00:00Z","host":"srv","event_category":"authentication","event_action":"login","outcome":"failure","src_ip":"192.0.2.1"}]'`}</pre>
+      </section>
+    </>
+  );
+}

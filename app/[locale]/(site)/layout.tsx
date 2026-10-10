@@ -18,7 +18,8 @@ export default async function SiteLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   return (
-    <><StructuredData/>
+    <>
+      <StructuredData />
       <SmoothScroll />
       <CustomCursor />
       <LiquidNav />

@@ -1,13 +1,165 @@
-import { describe,it,expect,vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { simulationEvents } from "@/server/services/data";
-import { normalize,parseLogs,parseCsv } from "@/server/parsers";
+import { normalize, parseLogs, parseCsv } from "@/server/parsers";
 import { eventSchema } from "@/server/schema";
 import { rateLimit } from "@/server/rate-limit";
-import { canMutate,isAdmin,createSessionToken,verifySessionToken } from "@/server/auth/session";
-import { readText,sameOrigin } from "@/server/http";
-const event={ts:1700000000000,host:"srv",event_category:"authentication",event_action:"login",outcome:"failure",src_ip:"192.0.2.1"};
-describe("normalization",()=>{it("normalizes JSON",()=>expect(normalize(event).outcome).toBe("failure"));it("does not trust simulation markers",()=>expect(normalize({...event,simulation:true}).simulation).toBe(false));it("uses deterministic IDs",()=>expect(normalize(event).id).toBe(normalize(event).id));it("normalizes seconds",()=>expect(normalize({...event,ts:1700000000}).ts).toBe(1700000000000));it("rejects invalid ports",()=>expect(()=>normalize({...event,dst_port:70000})).toThrow());it("rejects long hosts",()=>expect(eventSchema.safeParse({...normalize(event),host:"x".repeat(2000)}).success).toBe(false));it("rejects non-finite numbers",()=>expect(eventSchema.safeParse({...normalize(event),bytes_out:Infinity}).success).toBe(false));it("rejects primitives",()=>expect(()=>normalize("bad")).toThrow());});
-describe("parsers",()=>{it("parses arrays",()=>expect(parseLogs(JSON.stringify([event])).length).toBe(1));it("parses NDJSON",()=>expect(parseLogs(JSON.stringify(event)+"\n"+JSON.stringify({...event,ts:1700000000001})).length).toBe(2));it("parses pretty JSON",()=>expect(parseLogs(JSON.stringify(event,null,2)).length).toBe(1));it("parses Linux auth",()=>expect(parseLogs("Oct 10 12:00:00 host sshd[9]: Failed password for root from 192.0.2.1 port 20 ssh2")[0].outcome).toBe("failure"));it("parses nginx",()=>expect(parseLogs('192.0.2.1 - - [10/Oct/2026:12:00:00 +0000] "GET / HTTP/1.1" 200 100 "-" "Mozilla"')[0].http?.status).toBe(200));it("parses Windows",()=>expect(parseLogs(JSON.stringify({EventID:4625,Computer:"ad",EventData:{TargetUserName:"root",IpAddress:"192.0.2.1"}}))[0].user).toBe("root"));it("parses syslog",()=>expect(parseLogs("<34>1 2026-10-10T12:00:00Z host sshd 12 ID - Accepted password for root from 192.0.2.1 port 22")[0].outcome).toBe("success"));it("parses Zeek",()=>expect(parseLogs("#fields\tts\tid.orig_h\tid.resp_h\tid.resp_p\tproto\torig_bytes\tresp_bytes\tduration\n1700000000\t192.0.2.1\t10.0.0.1\t443\ttcp\t10\t100\t1")[0].bytes_in).toBe(100));it("parses CSV quotes",()=>expect(parseCsv('a,b\n"c,d","e""f"')).toEqual([["a","b"],["c,d",'e"f']]));it("rejects broken CSV",()=>expect(()=>parseCsv('"unfinished')).toThrow());it("rejects malformed logs",()=>expect(()=>parseLogs("nonsense")).toThrow());it("rejects empty input",()=>expect(()=>parseLogs("")).toThrow());it("rejects row overflow",()=>expect(()=>parseLogs(JSON.stringify(Array(5001).fill(event)))).toThrow());});
-describe("authorization",()=>{it.each(["viewer","analyst","admin"] as const)("role %s",role=>expect(canMutate({email:"a",role,demo:false})).toBe(role!=="viewer"));it("demo cannot write",()=>expect(canMutate({email:"d",role:"viewer",demo:true})).toBe(false));it("analyst is not admin",()=>expect(isAdmin({email:"a",role:"analyst",demo:false})).toBe(false));it("verifies signed sessions",async()=>{const t=await createSessionToken({email:"a",role:"admin",demo:false});expect((await verifySessionToken(t))?.role).toBe("admin");expect(await verifySessionToken(t+"x")).toBeNull();});it("rejects privileged demo",async()=>expect(createSessionToken({email:"a",role:"admin",demo:true})).rejects.toThrow());it("production requires a signing secret",async()=>{vi.stubEnv("NODE_ENV","production");vi.stubEnv("AUTH_SECRET","");await expect(createSessionToken({email:"a",role:"viewer",demo:false})).rejects.toThrow();vi.unstubAllEnvs();});it("requires same-origin mutations",()=>expect(()=>sameOrigin(new Request("https://a.test/api",{headers:{origin:"https://b.test"}}))).toThrow());it("allows same-origin mutations",()=>expect(()=>sameOrigin(new Request("https://a.test/api",{headers:{origin:"https://a.test"}}))).not.toThrow());it("enforces rate caps",()=>{expect(rateLimit("fixture",1,1000,1)).toBe(true);expect(rateLimit("fixture",1,1000,2)).toBe(false);expect(rateLimit("fixture",1,1000,1002)).toBe(true);});it("enforces stream body limits",async()=>expect(readText(new Request("https://a.test",{method:"POST",body:"12345"}),4)).rejects.toThrow());});
+import {
+  canMutate,
+  isAdmin,
+  createSessionToken,
+  verifySessionToken,
+} from "@/server/auth/session";
+import { readText, sameOrigin } from "@/server/http";
+const event = {
+  ts: 1700000000000,
+  host: "srv",
+  event_category: "authentication",
+  event_action: "login",
+  outcome: "failure",
+  src_ip: "192.0.2.1",
+};
+describe("normalization", () => {
+  it("normalizes JSON", () => expect(normalize(event).outcome).toBe("failure"));
+  it("does not trust simulation markers", () =>
+    expect(normalize({ ...event, simulation: true }).simulation).toBe(false));
+  it("uses deterministic IDs", () =>
+    expect(normalize(event).id).toBe(normalize(event).id));
+  it("normalizes seconds", () =>
+    expect(normalize({ ...event, ts: 1700000000 }).ts).toBe(1700000000000));
+  it("rejects invalid ports", () =>
+    expect(() => normalize({ ...event, dst_port: 70000 })).toThrow());
+  it("rejects long hosts", () =>
+    expect(
+      eventSchema.safeParse({ ...normalize(event), host: "x".repeat(2000) })
+        .success,
+    ).toBe(false));
+  it("rejects non-finite numbers", () =>
+    expect(
+      eventSchema.safeParse({ ...normalize(event), bytes_out: Infinity })
+        .success,
+    ).toBe(false));
+  it("rejects primitives", () => expect(() => normalize("bad")).toThrow());
+});
+describe("parsers", () => {
+  it("parses arrays", () =>
+    expect(parseLogs(JSON.stringify([event])).length).toBe(1));
+  it("parses NDJSON", () =>
+    expect(
+      parseLogs(
+        JSON.stringify(event) +
+          "\n" +
+          JSON.stringify({ ...event, ts: 1700000000001 }),
+      ).length,
+    ).toBe(2));
+  it("parses pretty JSON", () =>
+    expect(parseLogs(JSON.stringify(event, null, 2)).length).toBe(1));
+  it("parses Linux auth", () =>
+    expect(
+      parseLogs(
+        "Oct 10 12:00:00 host sshd[9]: Failed password for root from 192.0.2.1 port 20 ssh2",
+      )[0].outcome,
+    ).toBe("failure"));
+  it("parses nginx", () =>
+    expect(
+      parseLogs(
+        '192.0.2.1 - - [10/Oct/2026:12:00:00 +0000] "GET / HTTP/1.1" 200 100 "-" "Mozilla"',
+      )[0].http?.status,
+    ).toBe(200));
+  it("parses Windows", () =>
+    expect(
+      parseLogs(
+        JSON.stringify({
+          EventID: 4625,
+          Computer: "ad",
+          EventData: { TargetUserName: "root", IpAddress: "192.0.2.1" },
+        }),
+      )[0].user,
+    ).toBe("root"));
+  it("parses syslog", () =>
+    expect(
+      parseLogs(
+        "<34>1 2026-10-10T12:00:00Z host sshd 12 ID - Accepted password for root from 192.0.2.1 port 22",
+      )[0].outcome,
+    ).toBe("success"));
+  it("parses Zeek", () =>
+    expect(
+      parseLogs(
+        "#fields\tts\tid.orig_h\tid.resp_h\tid.resp_p\tproto\torig_bytes\tresp_bytes\tduration\n1700000000\t192.0.2.1\t10.0.0.1\t443\ttcp\t10\t100\t1",
+      )[0].bytes_in,
+    ).toBe(100));
+  it("parses CSV quotes", () =>
+    expect(parseCsv('a,b\n"c,d","e""f"')).toEqual([
+      ["a", "b"],
+      ["c,d", 'e"f'],
+    ]));
+  it("rejects broken CSV", () =>
+    expect(() => parseCsv('"unfinished')).toThrow());
+  it("rejects malformed logs", () =>
+    expect(() => parseLogs("nonsense")).toThrow());
+  it("rejects empty input", () => expect(() => parseLogs("")).toThrow());
+  it("rejects row overflow", () =>
+    expect(() => parseLogs(JSON.stringify(Array(5001).fill(event)))).toThrow());
+});
+describe("authorization", () => {
+  it.each(["viewer", "analyst", "admin"] as const)("role %s", (role) =>
+    expect(canMutate({ email: "a", role, demo: false })).toBe(
+      role !== "viewer",
+    ),
+  );
+  it("demo cannot write", () =>
+    expect(canMutate({ email: "d", role: "viewer", demo: true })).toBe(false));
+  it("analyst is not admin", () =>
+    expect(isAdmin({ email: "a", role: "analyst", demo: false })).toBe(false));
+  it("verifies signed sessions", async () => {
+    const t = await createSessionToken({
+      email: "a",
+      role: "admin",
+      demo: false,
+    });
+    expect((await verifySessionToken(t))?.role).toBe("admin");
+    expect(await verifySessionToken(t + "x")).toBeNull();
+  });
+  it("rejects privileged demo", async () =>
+    expect(
+      createSessionToken({ email: "a", role: "admin", demo: true }),
+    ).rejects.toThrow());
+  it("production requires a signing secret", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("AUTH_SECRET", "");
+    await expect(
+      createSessionToken({ email: "a", role: "viewer", demo: false }),
+    ).rejects.toThrow();
+    vi.unstubAllEnvs();
+  });
+  it("requires same-origin mutations", () =>
+    expect(() =>
+      sameOrigin(
+        new Request("https://a.test/api", {
+          headers: { origin: "https://b.test" },
+        }),
+      ),
+    ).toThrow());
+  it("allows same-origin mutations", () =>
+    expect(() =>
+      sameOrigin(
+        new Request("https://a.test/api", {
+          headers: { origin: "https://a.test" },
+        }),
+      ),
+    ).not.toThrow());
+  it("enforces rate caps", () => {
+    expect(rateLimit("fixture", 1, 1000, 1)).toBe(true);
+    expect(rateLimit("fixture", 1, 1000, 2)).toBe(false);
+    expect(rateLimit("fixture", 1, 1000, 1002)).toBe(true);
+  });
+  it("enforces stream body limits", async () =>
+    expect(
+      readText(
+        new Request("https://a.test", { method: "POST", body: "12345" }),
+        4,
+      ),
+    ).rejects.toThrow());
+});
 
-it("normalizes all simulation events",()=>expect(simulationEvents().every(e=>e.simulation)).toBe(true));
+it("normalizes all simulation events", () =>
+  expect(simulationEvents().every((e) => e.simulation)).toBe(true));

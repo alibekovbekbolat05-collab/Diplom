@@ -1,3 +1,12 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/config/site";
-export default function robots():MetadataRoute.Robots{return {rules:{userAgent:"*",allow:"/",disallow:["/api/",...site.locales.map(l=>`/${l}/platform`)]},sitemap:`${site.url}/sitemap.xml`};}
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/api/", ...site.locales.map((l) => `/${l}/platform`)],
+    },
+    sitemap: `${site.url}/sitemap.xml`,
+  };
+}

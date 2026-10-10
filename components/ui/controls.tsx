@@ -27,7 +27,7 @@ export function Segmented<T extends string>({
       aria-label={ariaLabel}
       className={cn(
         "inline-flex items-center gap-0.5 rounded-full border border-line bg-surface/60 p-0.5",
-        className
+        className,
       )}
     >
       {options.map((o) => {
@@ -41,7 +41,7 @@ export function Segmented<T extends string>({
             className={cn(
               "relative rounded-full transition-colors",
               size === "sm" ? "px-2.5 py-1 text-xs" : "px-3.5 py-1.5 text-sm",
-              active ? "text-ink" : "text-mute hover:text-ink"
+              active ? "text-ink" : "text-mute hover:text-ink",
             )}
           >
             {active && (
@@ -67,7 +67,7 @@ export function Input({
     <input
       className={cn(
         "h-10 w-full rounded-xl border border-line bg-surface/60 px-3 text-sm text-ink placeholder:text-mute/70 focus:border-accent/60 focus:outline-none",
-        className
+        className,
       )}
       {...props}
     />
@@ -82,7 +82,7 @@ export function Textarea({
     <textarea
       className={cn(
         "w-full rounded-xl border border-line bg-surface/60 p-3 text-sm text-ink placeholder:text-mute/70 focus:border-accent/60 focus:outline-none",
-        className
+        className,
       )}
       {...props}
     />
@@ -98,7 +98,7 @@ export function Select({
     <select
       className={cn(
         "h-10 w-full rounded-xl border border-line bg-surface px-3 text-sm text-ink focus:border-accent/60 focus:outline-none",
-        className
+        className,
       )}
       {...props}
     >
@@ -116,7 +116,9 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs uppercase tracking-wide text-mute">{label}</span>
+      <span className="mb-1.5 block text-xs uppercase tracking-wide text-mute">
+        {label}
+      </span>
       {children}
     </label>
   );

@@ -8,6 +8,22 @@ export async function pageContext(props: PageProps) {
   if (!isLocale(locale)) notFound();
   return { locale, m: getMessages(locale) };
 }
-export function pageMeta(title: string, description: string, locale: string, path = ""): Metadata {
-  return { title, description, alternates: { canonical: `${site.url}/${locale}${path}`, languages: Object.fromEntries([...site.locales.map(l => [l, `${site.url}/${l}${path}`]), ["x-default", `${site.url}/ru${path}`]]) }, openGraph: { title, description, url: `${site.url}/${locale}${path}` } };
+export function pageMeta(
+  title: string,
+  description: string,
+  locale: string,
+  path = "",
+): Metadata {
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${site.url}/${locale}${path}`,
+      languages: Object.fromEntries([
+        ...site.locales.map((l) => [l, `${site.url}/${l}${path}`]),
+        ["x-default", `${site.url}/ru${path}`],
+      ]),
+    },
+    openGraph: { title, description, url: `${site.url}/${locale}${path}` },
+  };
 }

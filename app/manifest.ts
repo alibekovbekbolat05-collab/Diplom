@@ -1,2 +1,16 @@
 import type { MetadataRoute } from "next";
-export default function manifest():MetadataRoute.Manifest{return {name:"Aspan Security / SecureOps",short_name:"SecureOps",description:"Centralized security monitoring diploma platform",start_url:"/ru",display:"standalone",background_color:"#080c11",theme_color:"#31e6ff",icons:[{src:"/icon.svg",sizes:"any",type:"image/svg+xml",purpose:"any"},{src:"/apple-icon",sizes:"180x180",type:"image/png"}]};}
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "Aspan Security / SecureOps",
+    short_name: "SecureOps",
+    description: "Centralized security monitoring diploma platform",
+    start_url: "/ru",
+    display: "standalone",
+    background_color: "#080c11",
+    theme_color: "#31e6ff",
+    icons: [
+      { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
+      { src: "/apple-icon", sizes: "180x180", type: "image/png" },
+    ],
+  };
+}

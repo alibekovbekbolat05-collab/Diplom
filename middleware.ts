@@ -22,6 +22,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
+    pathname === "/apple-icon" ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml" ||
     pathname === "/manifest.webmanifest" ||
@@ -47,7 +48,10 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  if (!maybeLocale || !(site.locales as readonly string[]).includes(maybeLocale)) {
+  if (
+    !maybeLocale ||
+    !(site.locales as readonly string[]).includes(maybeLocale)
+  ) {
     const locale = detectLocale(req);
     const url = req.nextUrl.clone();
     url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;

@@ -1,2 +1,4 @@
 import { AssetsView } from "@/components/platform/assets";
-export default function Page(){return <AssetsView/>;}
+export default function Page() {
+  return <AssetsView />;
+}

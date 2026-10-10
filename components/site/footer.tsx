@@ -11,28 +11,53 @@ export function Footer({ locale }: { locale: Locale }) {
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="font-display text-sm font-semibold">{company.name}</p>
-          <p className="mt-1 max-w-xs text-sm text-mute">{tr(company.tagline, locale)}</p>
+          <p className="mt-1 max-w-xs text-sm text-mute">
+            {tr(company.tagline, locale)}
+          </p>
           <p className="mt-3 text-xs text-mute">
             © {year} {company.legalName}. {m.footer.rights}.
           </p>
         </div>
-        <nav aria-label="footer" className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm">
-          <Link className="text-mute hover:text-ink" href={`/${locale}/product`}>
+        <nav
+          aria-label="footer"
+          className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm"
+        >
+          <Link
+            className="text-mute hover:text-ink"
+            href={`/${locale}/product`}
+          >
             {m.footer.product}
           </Link>
-          <Link className="text-mute hover:text-ink" href={`/${locale}/api-docs`}>
+          <Link
+            className="text-mute hover:text-ink"
+            href={`/${locale}/api-docs`}
+          >
             {m.footer.docs}
           </Link>
-          <Link className="text-mute hover:text-ink" href={`/${locale}/privacy`}>
+          <Link
+            className="text-mute hover:text-ink"
+            href={`/${locale}/privacy`}
+          >
             {m.footer.privacy}
           </Link>
-          <Link className="text-mute hover:text-ink" href={`/${locale}/contact`}>
+          <Link
+            className="text-mute hover:text-ink"
+            href={`/${locale}/contact`}
+          >
             {m.footer.contact}
           </Link>
-          <a className="text-mute hover:text-ink" href={`mailto:${company.contacts.email}`}>
+          <a
+            className="text-mute hover:text-ink"
+            href={`mailto:${company.contacts.email}`}
+          >
             {company.contacts.email}
           </a>
-          <a className="text-mute hover:text-ink" href={site.socials.telegram} rel="noopener noreferrer" target="_blank">
+          <a
+            className="text-mute hover:text-ink"
+            href={site.socials.telegram}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             Telegram
           </a>
         </nav>

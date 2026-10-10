@@ -1,11 +1,127 @@
-import { describe,it,expect } from "vitest";
-import { generateScenario,generateBaseline,generateWindow,SIM_SEED } from "@/server/simulator";
-import { normalize } from "@/server/parsers";
-import { detectBuiltins,decodePath } from "@/server/detection/detectors";
+import { describe, it, expect } from "vitest";
+import {
+  generateScenario,
+  generateBaseline,
+  generateWindow,
+  SIM_SEED,
+} from "@/server/simulator";
+import { normalize, parseLogs } from "@/server/parsers";
+import { detectBuiltins, decodePath } from "@/server/detection/detectors";
 import { detect } from "@/server/detection";
-import { builtInRules,ruleSchema,evaluateRule } from "@/server/rules";
-import { correlate,assets } from "@/server/correlation";
-const fixture=(id:string)=>generateScenario(id).map(e=>({...normalize(e,"simulator"),simulation:true}));
-const tests=[['port_scan','port_scan'],['ssh_bruteforce','bruteforce'],['rdp_bruteforce','bruteforce'],['password_spray','password_spray'],['credential_stuffing','credential_stuffing'],['impossible_travel','impossible_travel'],['priv_esc','privilege_abuse'],['lateral_movement','lateral_movement'],['dns_tunneling','dns_tunneling'],['c2_beacon','c2_beacon'],['exfiltration','exfiltration'],['dos_synflood','dos'],['sqli','sqli'],['xss_traversal','xss'],['bad_ip','threat_intel'],['malware_chain','malware_chain'],['offhours_share','offhours_share'],['insider_staging','insider_staging']];
-describe("detectors",()=>{it.each(tests)("detects %s as %s",(scenario,type)=>expect(detectBuiltins(fixture(scenario)).some(a=>a.type===type)).toBe(true));it.each(tests)("rejects baseline for %s",(_scenario,type)=>{const at=Date.UTC(2026,9,10,7);const baseline=generateBaseline(SIM_SEED,at,at+15*60000).map(e=>normalize(e,"simulator"));expect(detectBuiltins(baseline).filter(a=>a.type===type)).toEqual([]);});it("ignores simulation scenario labels",()=>{const e=normalize({...generateScenario("port_scan")[0],sim_scenario:"port_scan"});expect(detectBuiltins([e]).some(a=>a.type==="port_scan")).toBe(false);});it("decodes encoded payloads",()=>expect(decodePath("%253Cscript%253E")).toBe("<script>"));it("keeps returned event timestamps inside window",()=>{const from=Date.UTC(2026,9,10,7)+5234;expect(generateWindow(SIM_SEED,from,from+12345).every(e=>e.ts>=from&&e.ts<from+12345)).toBe(true);});it("produces deterministic windows",()=>expect(generateWindow(1,100000,200000)).toEqual(generateWindow(1,100000,200000)));});
-describe("rules and correlation",()=>{it("ships 25 validated rules",()=>{expect(builtInRules.length).toBe(25);for(const r of builtInRules)expect(ruleSchema.safeParse(r).success).toBe(true);});it("rejects executable rule fields",()=>expect(ruleSchema.safeParse({...builtInRules[0],conditions:[{field:"__proto__",op:"eval",value:"process.exit()"}]}).success).toBe(false));it("rejects excessive thresholds",()=>expect(ruleSchema.safeParse({...builtInRules[0],threshold:999999}).success).toBe(false));it("can disable a rule",()=>expect(evaluateRule({...builtInRules[0],enabled:false},fixture("ssh_bruteforce"))).toEqual([]));it("correlates and deduplicates",()=>{const a=detect(fixture("sqli"));const first=correlate(a);expect(correlate(a,first)).toEqual(first);expect(first.length).toBeLessThan(a.length);});it("preserves analyst status",()=>{const a=detect(fixture("sqli"));const cases=correlate(a);cases[0].status="resolved";expect(correlate(a,cases)[0].status).toBe("resolved");});it("risk increases with evidence",()=>{const e=fixture("sqli"),a=detect(e);expect(assets(e,a)[0].risk).toBeGreaterThanOrEqual(assets(e,[])[0].risk);});});
+import { builtInRules, ruleSchema, evaluateRule } from "@/server/rules";
+import { correlate, assets } from "@/server/correlation";
+const fixture = (id: string) =>
+  generateScenario(id).map((e) => ({
+    ...normalize(e, "simulator"),
+    simulation: true,
+  }));
+const tests = [
+  ["port_scan", "port_scan"],
+  ["ssh_bruteforce", "bruteforce"],
+  ["rdp_bruteforce", "bruteforce"],
+  ["password_spray", "password_spray"],
+  ["credential_stuffing", "credential_stuffing"],
+  ["impossible_travel", "impossible_travel"],
+  ["priv_esc", "privilege_abuse"],
+  ["lateral_movement", "lateral_movement"],
+  ["dns_tunneling", "dns_tunneling"],
+  ["c2_beacon", "c2_beacon"],
+  ["exfiltration", "exfiltration"],
+  ["dos_synflood", "dos"],
+  ["sqli", "sqli"],
+  ["xss_traversal", "xss"],
+  ["bad_ip", "threat_intel"],
+  ["malware_chain", "malware_chain"],
+  ["offhours_share", "offhours_share"],
+  ["insider_staging", "insider_staging"],
+];
+describe("detectors", () => {
+  it.each(tests)("detects %s as %s", (scenario, type) =>
+    expect(detectBuiltins(fixture(scenario)).some((a) => a.type === type)).toBe(
+      true,
+    ),
+  );
+  it.each(tests)("rejects baseline for %s", (_scenario, type) => {
+    const at = Date.UTC(2026, 9, 10, 7);
+    const baseline = generateBaseline(SIM_SEED, at, at + 15 * 60000).map((e) =>
+      normalize(e, "simulator"),
+    );
+    expect(detectBuiltins(baseline).filter((a) => a.type === type)).toEqual([]);
+  });
+  it("ignores simulation scenario labels", () => {
+    const e = normalize({
+      ...generateScenario("port_scan")[0],
+      sim_scenario: "port_scan",
+    });
+    expect(detectBuiltins([e]).some((a) => a.type === "port_scan")).toBe(false);
+  });
+  it("decodes encoded payloads", () =>
+    expect(decodePath("%253Cscript%253E")).toBe("<script>"));
+  it("keeps returned event timestamps inside window", () => {
+    const from = Date.UTC(2026, 9, 10, 7) + 5234;
+    expect(
+      generateWindow(SIM_SEED, from, from + 12345).every(
+        (e) => e.ts >= from && e.ts < from + 12345,
+      ),
+    ).toBe(true);
+  });
+  it("produces deterministic windows", () =>
+    expect(generateWindow(1, 100000, 200000)).toEqual(
+      generateWindow(1, 100000, 200000),
+    ));
+});
+describe("rules and correlation", () => {
+  it("ships 25 validated rules", () => {
+    expect(builtInRules.length).toBe(25);
+    for (const r of builtInRules)
+      expect(ruleSchema.safeParse(r).success).toBe(true);
+  });
+  it("rejects executable rule fields", () =>
+    expect(
+      ruleSchema.safeParse({
+        ...builtInRules[0],
+        conditions: [
+          { field: "__proto__", op: "eval", value: "process.exit()" },
+        ],
+      }).success,
+    ).toBe(false));
+  it("rejects excessive thresholds", () =>
+    expect(
+      ruleSchema.safeParse({ ...builtInRules[0], threshold: 999999 }).success,
+    ).toBe(false));
+  it("can disable a rule", () =>
+    expect(
+      evaluateRule(
+        { ...builtInRules[0], enabled: false },
+        fixture("ssh_bruteforce"),
+      ),
+    ).toEqual([]));
+  it("correlates and deduplicates", () => {
+    const a = detect(fixture("sqli"));
+    const first = correlate(a);
+    expect(correlate(a, first)).toEqual(first);
+    expect(first.length).toBeLessThan(a.length);
+  });
+  it("preserves analyst status", () => {
+    const a = detect(fixture("sqli"));
+    const cases = correlate(a);
+    cases[0].status = "resolved";
+    expect(correlate(a, cases)[0].status).toBe("resolved");
+  });
+  it("risk increases with evidence", () => {
+    const e = fixture("sqli"),
+      a = detect(e);
+    expect(assets(e, a)[0].risk).toBeGreaterThanOrEqual(assets(e, [])[0].risk);
+  });
+});
+
+describe("uploaded attack fixtures", () => {
+  it.each(tests.filter(([scenario]) => scenario !== "bad_ip"))(
+    "detects normalized uploaded %s as %s",
+    (scenario, type) => {
+      const events = parseLogs(JSON.stringify(generateScenario(scenario)));
+      expect(events.every((e) => !e.simulation)).toBe(true);
+      expect(detectBuiltins(events).some((a) => a.type === type)).toBe(true);
+    },
+  );
+});

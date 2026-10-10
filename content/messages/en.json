@@ -64,7 +64,8 @@
     "f3d": "Alerts correlated into incidents",
     "f4t": "Reports",
     "f4d": "Period, MITRE, ISO 27001",
-    "cta": "Open demo"
+    "cta": "Open demo",
+    "detD": "Built-in detectors and 25 rules: scans, brute force, C2, exfiltration, lateral movement and web attacks"
   },
   "services": {
     "title": "Services",
@@ -92,7 +93,7 @@
     "archT": "Architecture",
     "archD": "Collect and normalize → detect (rules + statistics + ML) → correlate → prioritize",
     "detT": "Detectors",
-    "detD": "16 built-in detectors and 25+ Sigma-like rules: scans, brute force, C2, exfiltration, lateral movement, web attacks",
+    "detD": "Built-in detectors and 25 rules: scans, brute force, C2, exfiltration, lateral movement and web attacks",
     "aiT": "AI model",
     "aiD": "Gradient boosting over network flow features + UEBA (EWMA, robust z-scores)",
     "metricsT": "Model metrics",
@@ -218,7 +219,8 @@
     "synthetic": "Synthetic benchmark",
     "error": "Error",
     "on": "Enabled",
-    "off": "Disabled"
+    "off": "Disabled",
+    "more": "More"
   },
   "platform": {
     "overview": "Overview",
@@ -413,7 +415,26 @@
     "transport": "Transport",
     "anomaly": "Anomaly",
     "historical": "Historical observations",
-    "featureNote": "Feature importance estimates are not causal explanations."
+    "featureNote": "Feature importance estimates are not causal explanations.",
+    "recommendation": "Review evidence, verify activity with the asset owner and preserve logs before containment.",
+    "illustration": "Illustrative connections; point locations are not geolocation.",
+    "trafficNote": "The chart uses the latest 500 displayed events.",
+    "sourceIp": "Source IP",
+    "targetIp": "Target IP",
+    "criticalLive": "New critical alerts",
+    "statuses": {
+      "open": "Open",
+      "investigating": "Investigating",
+      "resolved": "Resolved",
+      "false_positive": "False positive"
+    },
+    "outcomes": {
+      "success": "Success",
+      "failure": "Failure",
+      "unknown": "Unknown"
+    },
+    "heatmap": "Hosts × hour",
+    "operations": "Security operations"
   },
   "admin": {
     "ruleNote": "Rules use fields, thresholds and time windows. User code and regular expressions are never executed.",
@@ -438,5 +459,30 @@
     "users": "Users",
     "userNote": "Accounts and roles are configured using ADMIN_EMAIL / ADMIN_PASSWORD_HASH and USERS_JSON. Passwords are never displayed.",
     "action": "Action"
+  },
+  "alertNames": {
+    "port_scan": "Port scan",
+    "bruteforce": "Brute force",
+    "password_spray": "Password spray",
+    "credential_stuffing": "Credential stuffing",
+    "success_after_failures": "Success after failures",
+    "dos": "Denial of service",
+    "dns_tunneling": "DNS tunneling",
+    "c2_beacon": "C2 beacon",
+    "exfiltration": "Exfiltration",
+    "lateral_movement": "Lateral movement",
+    "sqli": "SQL injection",
+    "xss": "Cross-site scripting",
+    "path_traversal": "Path traversal",
+    "cmd_injection": "Command injection",
+    "privilege_abuse": "Privilege abuse",
+    "malware_chain": "Suspicious process chain",
+    "threat_intel": "Threat indicator",
+    "web_error_burst": "HTTP error burst",
+    "impossible_travel": "Impossible travel",
+    "offhours_share": "Off-hours access",
+    "insider_staging": "File staging",
+    "ueba_anomaly": "Behavior anomaly",
+    "ml_flow": "ML flow probability"
   }
 }

@@ -18,3 +18,15 @@ python ml/train.py --csv dataset.csv --dataset-name YOUR_DATASET_NAME
 Real CSV mode uses a stratified random 80/20 split. For publication, deduplicate flows and use a time- or host-separated external evaluation set. Do not describe the synthetic model as trained on CIC-IDS2017 or UNSW-NB15. No external labeled dataset is bundled. SYN/FIN features are inferred when unavailable, and this reduces reliability.
 
 The synthetic model is deliberately advisory by default: its probability contributes to alert priority but does not independently create alerts. Full-pipeline validation found dataset shift between ordinary simulator flows and the training generator. Enable `ML_FLOW_ALERTS=1` only after calibration on your own flows. UEBA separates network/web histories and requires at least 20 volume samples. Feature ablation against zero is an approximation, not causal attribution.
+
+## Optional CIC-IDS2017 input
+
+Official dataset/download page: https://www.unb.ca/cic/datasets/ids-2017.html (University of New Brunswick). Follow its download and usage terms locally; datasets are not committed. Use the flow CSV export, not packet captures.
+
+```sh
+python ml/preprocess.py CICFlowMeter.csv normalized-flows.csv --max-rows 250000
+python ml/train.py --csv normalized-flows.csv --dataset-name CIC-IDS2017-local-subset
+python ml/parity.py
+```
+
+Preprocessing trims headers, converts microsecond flow duration to seconds, sums directional packets, derives rate/ratio/mean size, maps BENIGN/NORMAL to zero, drops invalid/nonfinite and duplicate rows, and removes all identifiers. Missing SYN/FIN counts use explicitly documented defaults. The row cap is a local resource bound; the first accepted subset is not a representative sample. Build a balanced multi-day dataset and retain an independent time-separated test set before reporting production results. UNSW-NB15 has a different schema and requires an explicit feature mapper; this converter does not claim UNSW compatibility.

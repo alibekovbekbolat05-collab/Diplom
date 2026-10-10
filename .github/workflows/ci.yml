@@ -20,6 +20,7 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
+      - run: python3 ml/parity.py
       - run: npm run build
         env:
           AUTH_SECRET: ci-build-only-secret-with-at-least-32-characters

@@ -120,7 +120,12 @@ export function HeroCanvas({ className }: { className?: string }) {
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
-        ctx.quadraticCurveTo(mx, my, arc.t <= 1 ? px : b.x, arc.t <= 1 ? py : b.y);
+        ctx.quadraticCurveTo(
+          mx,
+          my,
+          arc.t <= 1 ? px : b.x,
+          arc.t <= 1 ? py : b.y,
+        );
         ctx.stroke();
         if (arc.t > 1.6) arc.t = 0;
       }

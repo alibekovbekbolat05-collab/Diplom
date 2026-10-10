@@ -9,3 +9,9 @@ next-env.d.ts
 .vercel
 .DS_Store
 content/metrics.local.json
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+ml/data/
+ml/datasets/

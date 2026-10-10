@@ -1,13 +1,131 @@
 "use client";
 import { ConsoleProvider } from "./context";
 import Link from "next/link";
-import { usePathname,useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { useI18n,useTheme } from "@/components/providers";
+import { useI18n, useTheme } from "@/components/providers";
 import type { Session } from "@/server/auth/session";
 import { useState } from "react";
-export function PlatformShell({session,children}:{session:Session;children:React.ReactNode}){const {messages:m,locale}=useI18n();const path=usePathname();const router=useRouter();const {toggle}=useTheme();const [error,setError]=useState("");
- async function logout(){try{const r=await fetch("/api/auth/logout",{method:"POST",headers:{"x-csrf-token":session.csrf||""}});if(!r.ok)throw Error();router.push(`/${locale}/platform/login`);router.refresh();}catch{setError(m.common.error);}}
- const items=[{key:"overview",href:""},{key:"events",href:"/events"},{key:"alerts",href:"/alerts"},{key:"cases",href:"/cases"},{key:"assets",href:"/assets"},{key:"sources",href:"/sources"},{key:"rules",href:"/rules"},{key:"reports",href:"/reports"},{key:"analyze",href:"/analyze"},{key:"settings",href:"/settings"},{key:"audit",href:"/audit"}] as const;
- return <ConsoleProvider session={session}><div className="min-h-screen lg:pl-60"><aside className="fixed inset-y-0 left-0 hidden w-60 no-print border-r border-line bg-surface p-5 lg:flex lg:flex-col"><Link href={`/${locale}`} className="mb-12 font-display text-accent">Aspan / SecureOps</Link><nav className="space-y-2">{items.map(n=><Link href={`/${locale}/platform${n.href}`} key={n.key} className="relative block rounded-xl px-4 py-3 text-sm">{path===`/${locale}/platform${n.href}`&&<motion.span layoutId="platform-blob" className="absolute inset-0 rounded-xl border border-accent/30 bg-accent/10"/>}<span className="relative">{m.platform.modules[n.key]}</span></Link>)}</nav><Link href={`/${locale}`} className="mt-auto text-sm text-mute">← {m.nav.backToSite}</Link></aside><header className="no-print flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4"><p className="text-xs text-mute">{session.email} / {m.common.roles[session.role]} {session.demo&&<span className="ml-3 rounded-full border border-accent/40 px-3 py-1 text-accent">{m.common.simulation}</span>}</p><div className="flex items-center gap-4"><button onClick={toggle} aria-label={m.theme.dark+" / "+m.theme.light} className="text-sm">◐</button>{["ru","en","kk"].map(l=><Link key={l} href={path.replace(`/${locale}/`,`/${l}/`)} className="text-xs uppercase text-mute">{l}</Link>)}<button onClick={()=>void logout()} className="text-xs text-mute">{m.platform.signOut}</button></div></header><p role="alert" className="text-critical">{error}</p><main className="mx-auto max-w-[1600px] px-4 py-8 pb-28 sm:px-7 lg:pb-8">{children}</main><nav className="no-print glass fixed inset-x-3 bottom-3 z-40 flex overflow-x-auto rounded-full p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] lg:hidden">{items.map(n=><Link key={n.key} className="shrink-0 px-2 py-2 text-xs" href={`/${locale}/platform${n.href}`}>{m.platform.modules[n.key]}</Link>)}<Link href={`/${locale}`} className="shrink-0 px-2 py-2 text-xs">↗</Link></nav></div></ConsoleProvider>;
+export function PlatformShell({
+  session,
+  children,
+}: {
+  session: Session;
+  children: React.ReactNode;
+}) {
+  const { messages: m, locale } = useI18n();
+  const path = usePathname();
+  const router = useRouter();
+  const { toggle } = useTheme();
+  const [error, setError] = useState("");
+  async function logout() {
+    try {
+      const r = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "x-csrf-token": session.csrf || "" },
+      });
+      if (!r.ok) throw Error();
+      router.push(`/${locale}/platform/login`);
+      router.refresh();
+    } catch {
+      setError(m.common.error);
+    }
+  }
+  const items = [
+    { key: "overview", href: "" },
+    { key: "events", href: "/events" },
+    { key: "alerts", href: "/alerts" },
+    { key: "cases", href: "/cases" },
+    { key: "assets", href: "/assets" },
+    { key: "sources", href: "/sources" },
+    { key: "rules", href: "/rules" },
+    { key: "reports", href: "/reports" },
+    { key: "analyze", href: "/analyze" },
+    { key: "settings", href: "/settings" },
+    { key: "audit", href: "/audit" },
+  ] as const;
+  return (
+    <ConsoleProvider session={session}>
+      <div className="min-h-screen lg:pl-60">
+        <aside className="fixed inset-y-0 left-0 hidden w-60 no-print border-r border-line bg-surface p-5 lg:flex lg:flex-col">
+          <Link href={`/${locale}`} className="mb-8 font-display text-accent">
+            Aspan / SecureOps
+          </Link>
+          <nav className="min-h-0 flex-1 space-y-2 overflow-y-auto">
+            {items.map((n) => (
+              <Link
+                href={`/${locale}/platform${n.href}`}
+                key={n.key}
+                className="relative block rounded-xl px-4 py-3 text-sm"
+              >
+                {(path === `/${locale}/platform${n.href}` ||
+                  (!!n.href &&
+                    path.startsWith(`/${locale}/platform${n.href}/`))) && (
+                  <motion.span
+                    layoutId="platform-blob"
+                    className="absolute inset-0 rounded-xl border border-accent/30 bg-accent/10"
+                  />
+                )}
+                <span className="relative">{m.platform.modules[n.key]}</span>
+              </Link>
+            ))}
+          </nav>
+          <Link href={`/${locale}`} className="mt-auto text-sm text-mute">
+            ← {m.nav.backToSite}
+          </Link>
+        </aside>
+        <header className="no-print flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+          <p className="text-xs text-mute">
+            {session.email} / {m.common.roles[session.role]}{" "}
+            {session.demo && (
+              <span className="ml-3 rounded-full border border-accent/40 px-3 py-1 text-accent">
+                {m.common.simulation}
+              </span>
+            )}
+          </p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggle}
+              aria-label={m.theme.dark + " / " + m.theme.light}
+              className="text-sm"
+            >
+              ◐
+            </button>
+            {["ru", "en", "kk"].map((l) => (
+              <Link
+                key={l}
+                href={path.replace(`/${locale}/`, `/${l}/`)}
+                className="text-xs uppercase text-mute"
+              >
+                {l}
+              </Link>
+            ))}
+            <button onClick={() => void logout()} className="text-xs text-mute">
+              {m.platform.signOut}
+            </button>
+          </div>
+        </header>
+        <p role="alert" className="text-critical">
+          {error}
+        </p>
+        <main className="mx-auto max-w-[1600px] px-4 py-8 pb-28 sm:px-7 lg:pb-8">
+          {children}
+        </main>
+        <nav className="no-print glass fixed inset-x-3 bottom-3 z-40 flex overflow-x-auto rounded-full p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] lg:hidden">
+          {items.map((n) => (
+            <Link
+              key={n.key}
+              className="shrink-0 px-2 py-2 text-xs"
+              href={`/${locale}/platform${n.href}`}
+            >
+              {m.platform.modules[n.key]}
+            </Link>
+          ))}
+          <Link href={`/${locale}`} className="shrink-0 px-2 py-2 text-xs">
+            ↗
+          </Link>
+        </nav>
+      </div>
+    </ConsoleProvider>
+  );
 }

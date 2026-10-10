@@ -23,7 +23,11 @@ export function generateStaticParams() {
   return site.locales.map((locale) => ({ locale }));
 }
 
-export const viewport:Viewport={width:"device-width",initialScale:1,themeColor:"#080c11"};
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#080c11",
+};
 
 const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.add('light');}catch(e){}})();`;
 
@@ -73,7 +77,11 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
   const messages: Messages = getMessages(locale);
   return (
-    <html lang={locale} className={`${inter.variable} ${unbounded.variable}`} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={`${inter.variable} ${unbounded.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script>{themeScript}</script>
       </head>

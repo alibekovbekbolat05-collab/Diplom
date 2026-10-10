@@ -39,3 +39,5 @@ curl -X POST https://YOUR_HOST/api/ingest \
 ```
 
 Schema: `server/schema.ts`; supported field/operator rules: `server/rules/index.ts`. Query syntax: `src_ip:10.0.0.0/24 AND outcome:failure`, parentheses and AND/OR/NOT. Bare words search the event JSON. Unsupported fields/operators fail validation. Queries are limited to 1024 characters / 100 tokens. No arbitrary regular expressions or executable code. File data is parsed as text, never executed.
+
+Additional rule mutations: `POST /api/rules` with a full validated rule creates it (admin); `PATCH /api/rules` with `{id,changes}` updates allowed fields (admin). `POST {rule,events}` remains the analyst/admin sample test. The normalized event schema has version 1, numeric millisecond `ts`, bounded `host/source/action`, category/outcome enums, valid IPv4/IPv6 addresses and port bounds, nonnegative byte/packet/duration values, structured HTTP/DNS, and optional raw text clipped to 4096 characters. Real ingestion overrides simulation flags.

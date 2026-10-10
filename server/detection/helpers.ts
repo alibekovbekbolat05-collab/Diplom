@@ -1,10 +1,87 @@
 import { createHash } from "node:crypto";
-import type { SecurityEvent,Alert,Severity } from "@/server/schema";
+import type { SecurityEvent, Alert, Severity } from "@/server/schema";
 import { severityWeight } from "./config";
-export const hash=(s:string)=>createHash("sha256").update(s).digest("hex").slice(0,24);
-export function groups(events:SecurityEvent[],key:(e:SecurityEvent)=>string|undefined){const map=new Map<string,SecurityEvent[]>();for(const e of events){const k=key(e);if(k){const list=map.get(k)||[];list.push(e);map.set(k,list);}}return [...map.values()];}
-export function windows(events:SecurityEvent[],ms:number){const sorted=[...events].sort((a,b)=>a.ts-b.ts);return {find(test:(window:SecurityEvent[])=>boolean){let start=0;for(let end=0;end<sorted.length;end++){while(sorted[end].ts-sorted[start].ts>ms)start++;const window=sorted.slice(start,end+1);if(test(window))return window;}return undefined;}};}
+export const hash = (s: string) =>
+  createHash("sha256").update(s).digest("hex").slice(0, 24);
+export function groups(
+  events: SecurityEvent[],
+  key: (e: SecurityEvent) => string | undefined,
+) {
+  const map = new Map<string, SecurityEvent[]>();
+  for (const e of events) {
+    const k = key(e);
+    if (k) {
+      const list = map.get(k) || [];
+      list.push(e);
+      map.set(k, list);
+    }
+  }
+  return [...map.values()];
+}
+export function windows(events: SecurityEvent[], ms: number) {
+  const sorted = [...events].sort((a, b) => a.ts - b.ts);
+  return {
+    find(test: (window: SecurityEvent[]) => boolean) {
+      let start = 0;
+      for (let end = 0; end < sorted.length; end++) {
+        while (sorted[end].ts - sorted[start].ts > ms) start++;
+        const window = sorted.slice(start, end + 1);
+        if (test(window)) return window;
+      }
+      return undefined;
+    },
+  };
+}
 
-export function internal(ip?:string){return !!ip&&(/^(10\.|192\.168\.|127\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/.test(ip)||ip==="::1"||/^(fc|fd|fe80:)/i.test(ip));}
-export function entropy(s:string){const counts=new Map<string,number>();for(const c of s)counts.set(c,(counts.get(c)||0)+1);let sum=0;for(const n of counts.values()){const p=n/s.length;sum-=p*Math.log2(p);}return sum;}
-export function makeAlert(type:string,severity:Severity,mitre:string,events:SecurityEvent[],evidence:Record<string,unknown>,confidence=.85):Alert{const sorted=[...events].sort((a,b)=>a.ts-b.ts),first=sorted[0];const entities=[...new Set(events.flatMap(e=>[e.host,e.src_ip,e.dst_ip,e.user].filter((x):x is string=>!!x)))].slice(0,30);return {id:hash(`${type}:${first.id}:${first.simulation}`),type,severity,confidence,ts:sorted[sorted.length-1].ts,entities,event_ids:sorted.slice(0,100).map(e=>e.id),mitre,recommendation:"Review the evidence, verify the activity with the asset owner, and preserve relevant logs before taking containment action.",evidence,simulation:first.simulation,priority:severityWeight[severity],factors:[{name:"severity",value:severityWeight[severity]}]};}
+export function internal(ip?: string) {
+  return (
+    !!ip &&
+    (/^(10\.|192\.168\.|127\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/.test(ip) ||
+      ip === "::1" ||
+      /^(fc|fd|fe80:)/i.test(ip))
+  );
+}
+export function entropy(s: string) {
+  const counts = new Map<string, number>();
+  for (const c of s) counts.set(c, (counts.get(c) || 0) + 1);
+  let sum = 0;
+  for (const n of counts.values()) {
+    const p = n / s.length;
+    sum -= p * Math.log2(p);
+  }
+  return sum;
+}
+export function makeAlert(
+  type: string,
+  severity: Severity,
+  mitre: string,
+  events: SecurityEvent[],
+  evidence: Record<string, unknown>,
+  confidence = 0.85,
+): Alert {
+  const sorted = [...events].sort((a, b) => a.ts - b.ts),
+    first = sorted[0];
+  const entities = [
+    ...new Set(
+      events.flatMap((e) =>
+        [e.host, e.src_ip, e.dst_ip, e.user].filter((x): x is string => !!x),
+      ),
+    ),
+  ].slice(0, 30);
+  return {
+    id: hash(`${type}:${first.id}:${first.simulation}`),
+    type,
+    severity,
+    confidence,
+    ts: sorted[sorted.length - 1].ts,
+    entities,
+    event_ids: sorted.slice(0, 100).map((e) => e.id),
+    mitre,
+    recommendation:
+      "Review the evidence, verify the activity with the asset owner, and preserve relevant logs before taking containment action.",
+    evidence,
+    simulation: first.simulation,
+    priority: severityWeight[severity],
+    factors: [{ name: "severity", value: severityWeight[severity] }],
+  };
+}

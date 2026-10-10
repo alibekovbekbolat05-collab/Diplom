@@ -1,2 +1,4 @@
 import { EventsView } from "@/components/platform/events";
-export default function Page(){return <EventsView/>;}
+export default function Page() {
+  return <EventsView />;
+}
