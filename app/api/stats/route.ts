@@ -1,20 +1,6 @@
-import { NextResponse } from "next/server";
-import { SIM_SEED, SIM_HOSTS, SIM_USERS, generateWindow } from "@/server/simulator";
-
-export const dynamic = "force-dynamic";
-
-export async function GET() {
-  const now = Date.now();
-  const events = generateWindow(SIM_SEED, now - 60_000, now, 6000);
-  const eps = Math.round((events.length / 60) * 10) / 10;
-  return NextResponse.json(
-    {
-      eps,
-      alerts: 0,
-      cases: 0,
-      assets: SIM_HOSTS.length + SIM_USERS.length,
-      simulation: true,
-    },
-    { headers: { "cache-control": "no-store" } }
-  );
-}
+import { NextRequest,NextResponse } from "next/server";
+import { getSessionFromRequest } from "@/server/auth/session";
+import { snapshot } from "@/server/services/pipeline";
+import { errorResponse } from "@/server/http";
+export const dynamic="force-dynamic";export const runtime="nodejs";
+export async function GET(req:NextRequest){try{const session=await getSessionFromRequest(req)||{email:"public",role:"viewer" as const,demo:true};const s=await snapshot(session,req.nextUrl.searchParams.get("source")||"simulation");return NextResponse.json({eps:Math.round(s.events.filter(e=>e.ts>Date.now()-60000).length/6)/10,alerts:s.alerts.length,cases:s.cases.length,assets:s.assets.length,simulation:s.simulation},{headers:{"Cache-Control":"no-store"}});}catch(e){return errorResponse(e);}}

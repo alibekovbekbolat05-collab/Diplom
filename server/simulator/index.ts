@@ -502,9 +502,9 @@ export function generateWindow(
   const bucket = 10_000;
   const firstBucket = Math.floor(fromMs / bucket) * bucket;
   for (let b = firstBucket; b < toMs; b += bucket) {
-    if (b + bucket >= fromMs) out.push(...baselineBucket(seed, b));
+    if (b + bucket >= fromMs) out.push(...baselineBucket(seed, b).filter(e => e.ts >= fromMs && e.ts < toMs));
   }
-  const firstDay = Math.floor(fromMs / DAY_MS) * DAY_MS;
+  const firstDay = Math.floor(fromMs / DAY_MS) * DAY_MS - DAY_MS;
   for (let d = firstDay; d <= toMs; d += DAY_MS) {
     for (const e of scenarioEventsForDay(seed, d)) {
       if (e.ts >= fromMs && e.ts < toMs) out.push(e);
@@ -518,4 +518,16 @@ export function generateWindow(
     return sampled;
   }
   return out;
+}
+
+export const scenarioIds = SCENARIOS.map(s => s.id);
+export function generateScenario(id: string, seed = SIM_SEED, at = 1791669600000): SimEvent[] {
+  const scenario = SCENARIOS.find(s => s.id === id);
+  if (!scenario) throw new Error("Unknown scenario");
+  return scenario.fn(mulberry32(seed), at);
+}
+export function generateBaseline(seed: number, fromMs: number, toMs: number): SimEvent[] {
+  const result: SimEvent[] = [];
+  for (let b = Math.floor(fromMs / 10000) * 10000; b < toMs; b += 10000) result.push(...baselineBucket(seed, b).filter(e => e.ts >= fromMs && e.ts < toMs));
+  return result.sort((a,b) => a.ts-b.ts);
 }
