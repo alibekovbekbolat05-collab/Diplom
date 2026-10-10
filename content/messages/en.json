@@ -216,7 +216,9 @@
     "noteProb": "Detection is probabilistic, false positives are possible",
     "aiGenerated": "AI-generated",
     "synthetic": "Synthetic benchmark",
-    "error": "Error"
+    "error": "Error",
+    "on": "Enabled",
+    "off": "Disabled"
   },
   "platform": {
     "overview": "Overview",
@@ -412,5 +414,29 @@
     "anomaly": "Anomaly",
     "historical": "Historical observations",
     "featureNote": "Feature importance estimates are not causal explanations."
+  },
+  "admin": {
+    "ruleNote": "Rules use fields, thresholds and time windows. User code and regular expressions are never executed.",
+    "ruleJson": "Rule JSON",
+    "test": "Test on sample",
+    "matches": "Matches",
+    "print": "Print / PDF",
+    "isoNote": "Control mapping is indicative and does not establish standards compliance.",
+    "fileNote": "Up to 2 MiB / 5000 events. JSON, NDJSON, CSV, Zeek TSV, syslog, access logs. Files are never executed or added to ingestion.",
+    "chooseFile": "Choose a file",
+    "analyze": "Analyze",
+    "storage": "Storage",
+    "storageNote": "Local storage is ephemeral. Configure Upstash Redis to persist across restarts.",
+    "ipMask": "Mask IP addresses",
+    "channels": "Notifications",
+    "channelNote": "Channels are configured through secret environment variables. Only new real high/critical incidents are sent.",
+    "tokens": "Ingest tokens",
+    "label": "Label",
+    "create": "Create",
+    "once": "Copy the token now. It cannot be retrieved again.",
+    "revoke": "Revoke",
+    "users": "Users",
+    "userNote": "Accounts and roles are configured using ADMIN_EMAIL / ADMIN_PASSWORD_HASH and USERS_JSON. Passwords are never displayed.",
+    "action": "Action"
   }
 }
