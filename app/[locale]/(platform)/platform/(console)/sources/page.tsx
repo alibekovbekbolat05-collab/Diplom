@@ -1,2 +1,2 @@
-import { pageContext,type PageProps } from "@/lib/metadata";
-export default async function Sources(p:PageProps){const {m}=await pageContext(p);return <><h1 className="mb-8 font-display text-3xl">{m.platform.modules.sources}</h1><div className="panel p-8"><h2 className="text-lg">POST /api/ingest</h2><p className="my-5 text-mute">{m.apiDocs.ingestD}</p><pre className="overflow-x-auto text-sm text-accent">{`curl -X POST https://YOUR_HOST/api/ingest \\n  -H "Authorization: Bearer YOUR_INGEST_TOKEN" \\n  -H "Content-Type: application/json" \\n  --data '[{"ts":"2026-10-10T12:00:00Z","host":"server","event_category":"authentication","event_action":"login","outcome":"failure","src_ip":"192.0.2.4"}]'`}</pre></div></>;}
+import { SourcesView } from "@/components/platform/sources";
+export default function Page(){return <SourcesView/>;}

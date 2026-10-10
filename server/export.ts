@@ -1,0 +1,3 @@
+export function csvCell(value:unknown){let text=String(value??"");if(/^[\s\u0000-\u001f]*[=+@-]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';}
+export function toCsv(rows:Record<string,unknown>[],columns:string[]){return '\uFEFF'+[columns.map(csvCell).join(","),...rows.map(row=>columns.map(k=>csvCell(row[k])).join(","))].join("\r\n");}
+export function maskData<T>(value:T):T { function mask(x:unknown):unknown{if(typeof x==="string")return x.replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g,ip=>ip.split(".").slice(0,3).join(".")+".xxx");if(Array.isArray(x))return x.map(mask);if(x&&typeof x==="object")return Object.fromEntries(Object.entries(x).map(([k,v])=>[k,mask(v)]));return x;}return mask(value) as T;}

@@ -386,5 +386,31 @@
       "settings": "Settings",
       "audit": "Audit"
     }
+  },
+  "console": {
+    "live": "Event stream",
+    "source": "Data source",
+    "scenario": "Attack scenario",
+    "scheduled": "Scheduled",
+    "baseline": "Normal traffic",
+    "allScenarios": "All scenarios",
+    "updated": "Updated",
+    "total": "Total events",
+    "priority": "Priority",
+    "host": "Host",
+    "readOnly": "Read-only mode",
+    "refresh": "Refresh",
+    "none": "No data in the selected window",
+    "copyLink": "Copy link",
+    "retry": "Retry",
+    "duration": "Duration",
+    "coverage": "Coverage",
+    "rawNote": "Original values are rendered as text.",
+    "show": "Show",
+    "format": "Format",
+    "transport": "Transport",
+    "anomaly": "Anomaly",
+    "historical": "Historical observations",
+    "featureNote": "Feature importance estimates are not causal explanations."
   }
 }
